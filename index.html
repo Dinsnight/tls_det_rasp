@@ -1,316 +1,1769 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Top Level School — расписание уроков</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<style>
-  :root{
-    --paper:#FBF7EC;
-    --paper-line:#E7DFC9;
-    --ink:#2B2A4C;
-    --ink-soft:#6B6A8A;
-    --accent:#FF5D73;
-    --gold:#F4B740;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Top Level School — расписание уроков</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --paper: #fbf7ec;
+        --paper-line: #e7dfc9;
+        --ink: #2b2a4c;
+        --ink-soft: #6b6a8a;
+        --accent: #ff5d73;
+        --gold: #f4b740;
 
-    --mon:#FFB4A2;
-    --tue:#FFD6A5;
-    --wed:#FCE38A;
-    --thu:#B9E6A5;
-    --fri:#A0DDE6;
-  }
-
-  *{box-sizing:border-box;}
-
-  body{
-    background:
-      linear-gradient(var(--paper-line) 1px, transparent 1px);
-    background-size: 100% 42px;
-    background-color: var(--paper);
-    font-family:'Nunito', sans-serif;
-    color:var(--ink);
-    min-height:100vh;
-    padding-bottom:60px;
-  }
-
-  .brand-mark{ font-family:'Baloo 2', sans-serif; font-weight:800; }
-
-  .topbar{ background: var(--ink); color:#fff; padding: 14px 0; }
-  .topbar .brand-mark{ font-size:1.3rem; letter-spacing:.3px; }
-  .topbar .brand-mark span{ color: var(--gold); }
-  .topbar small{ color: rgba(255,255,255,.55); font-weight:700; }
-
-  .hero{ padding: 40px 0 20px; }
-  .hero .eyebrow-date{ font-size: 1rem; color: var(--ink-soft); font-weight:700; margin-bottom: 4px; }
-  .hero h1{
-    font-family:'Baloo 2', sans-serif;
-    font-weight:800;
-    font-size: clamp(1.9rem, 4.6vw, 2.9rem);
-    line-height:1.08;
-    margin-bottom:8px;
-  }
-  .hero .today-underline{
-    text-decoration: underline;
-    text-decoration-color: var(--wed);
-    text-decoration-thickness: 10px;
-    text-underline-offset: -4px;
-    text-decoration-skip-ink: none;
-    position:relative;
-    z-index:1;
-  }
-  .hero p.lead-text{ color: var(--ink-soft); font-size:1.02rem; max-width: 600px; }
-
-  .class-picker{ display:flex; flex-wrap:wrap; gap:8px; padding: 4px 0 8px; }
-  .class-btn{
-    font-family:'Baloo 2', sans-serif;
-    font-weight:700;
-    min-width:52px; height:46px;
-    padding: 0 10px;
-    border-radius: 12px;
-    border:2px solid var(--ink);
-    background:#fff;
-    color:var(--ink);
-    display:flex; align-items:center; justify-content:center;
-    font-size:1rem;
-    transition: transform .12s ease, background .12s ease, color .12s ease;
-  }
-  .class-btn:hover{ transform: translateY(-2px); }
-  .class-btn.active{ background: var(--ink); color:#fff; }
-  .class-picker-label{
-    font-weight:800; font-family:'Baloo 2', sans-serif;
-    color: var(--ink-soft); font-size:.95rem; align-self:center; margin-right:6px;
-  }
-
-  .teacher-strip{
-    display:flex; align-items:center; gap:12px;
-    background:#fff; border:2px solid var(--ink); border-radius: 14px;
-    padding: 12px 16px; margin: 18px 0 26px;
-    box-shadow: 4px 4px 0 var(--ink);
-    max-width: 640px;
-  }
-  .teacher-avatar{
-    width:42px; height:42px; border-radius:50%;
-    background: var(--gold); border: 2px solid var(--ink); flex-shrink:0;
-    display:flex; align-items:center; justify-content:center;
-    font-family:'Baloo 2', sans-serif; font-weight:800; font-size:1.1rem;
-  }
-  .teacher-strip .t-name{ font-weight:800; font-size:.95rem; }
-  .teacher-strip .t-role{ color: var(--ink-soft); font-size:.8rem; font-weight:700; }
-  .teacher-strip .t-phone{
-    margin-left:auto; font-weight:800; font-size:.88rem; white-space:nowrap;
-    text-decoration:none; color: var(--ink);
-    border: 2px solid var(--ink); border-radius: 999px; padding: 6px 12px;
-  }
-  .teacher-strip .t-phone:hover{ background: var(--ink); color:#fff; }
-
-  .legend{ display:flex; flex-wrap:wrap; gap:10px 18px; margin: 4px 0 26px; font-size:.86rem; color: var(--ink-soft); font-weight:700; }
-  .legend .dot{ display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:6px; vertical-align:-1px; border: 1.5px solid rgba(0,0,0,.15); }
-
-  .day-card{
-    border-radius: 18px; border: 2px solid var(--ink); background:#fff; overflow:hidden; height:100%;
-    box-shadow: 5px 5px 0 var(--ink);
-    transition: transform .15s ease, box-shadow .15s ease;
-  }
-  .day-card.is-today{ transform: translateY(-6px) scale(1.015); box-shadow: 7px 7px 0 var(--ink); }
-  .day-head{
-    padding: 14px 16px 12px; font-family:'Baloo 2', sans-serif; font-weight:800; font-size:1.1rem;
-    border-bottom: 2px solid var(--ink); display:flex; align-items:center; justify-content:space-between;
-  }
-  .today-pill{
-    font-family:'Nunito',sans-serif; font-size:.66rem; font-weight:800;
-    background: var(--ink); color:#fff; padding: 3px 9px; border-radius: 999px; letter-spacing:.3px;
-  }
-
-  .lesson-list{ list-style:none; margin:0; padding: 8px 0; }
-  .lesson-item{ display:flex; gap:10px; padding: 8px 16px; align-items:baseline; border-bottom: 1px dashed rgba(43,42,76,.15); }
-  .lesson-item:last-child{ border-bottom:none; }
-  .lesson-num{ font-family:'Baloo 2', sans-serif; font-weight:700; color: var(--ink-soft); font-size:.82rem; width: 16px; flex-shrink:0; }
-  .lesson-time{ font-size:.7rem; color: var(--ink-soft); font-weight:700; width:78px; flex-shrink:0; }
-  .lesson-name{ font-weight:700; font-size:.88rem; }
-  .lesson-item.is-break{ background: rgba(43,42,76,.045); font-style: italic; }
-  .lesson-item.is-break .lesson-name{ color: var(--ink-soft); font-weight:700; }
-
-  .day-card.is-today .lesson-item{ border-bottom-color: rgba(43,42,76,.25); }
-  .day-card.is-today .lesson-name{ font-weight:800; }
-
-  .empty-note{ padding: 20px 16px; color: var(--ink-soft); font-weight:700; font-size:.88rem; }
-
-  footer.site-footer{ text-align:center; color: var(--ink-soft); font-size:.85rem; font-weight:600; margin-top: 34px; }
-
-  @media (max-width: 767px){ .day-card.is-today{ transform:none; } }
-</style>
-</head>
-<body>
-
-<div class="topbar">
-  <div class="container d-flex align-items-center justify-content-between flex-wrap gap-1">
-    <span class="brand-mark">Top Level <span>School</span></span>
-    <small>Дневник уроков</small>
-  </div>
-</div>
-
-<div class="container hero">
-  <div class="eyebrow-date" id="fullDateLabel">—</div>
-  <h1>Расписание на <span class="today-underline" id="todayNameLabel">сегодня</span></h1>
-  <p class="lead-text">Выберите класс — дневник покажет всю учебную неделю. День, в котором вы сейчас находитесь, выделен своим цветом и виден сразу.</p>
-
-  <div class="class-picker mt-4" id="classPicker">
-    <span class="class-picker-label">Класс:</span>
-  </div>
-
-  <div class="teacher-strip" id="teacherStrip" style="display:none;">
-    <div class="teacher-avatar" id="teacherAvatar">?</div>
-    <div>
-      <div class="t-name" id="teacherName">—</div>
-      <div class="t-role" id="teacherRole">—</div>
-    </div>
-    <a href="#" class="t-phone" id="teacherPhone" style="display:none;"></a>
-  </div>
-
-  <div class="legend" id="legend"></div>
-
-  <div class="row g-3" id="scheduleGrid"></div>
-
-  <footer class="site-footer">Нажмите на класс наверху, чтобы посмотреть его расписание.</footer>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-/* ===== Реальные данные: 2026_дарсжадвали.xlsx + информация_об_учителях.docx ===== */
-const SCHEDULE = {"mon": {"1A": [{"num": 1, "time": "09:00-09:40", "subject": "Информатика"}, {"num": 2, "time": "9:50-10:30", "subject": "Математика"}, {"num": 3, "time": "10:45-11:25", "subject": "Английский язык"}, {"num": 4, "time": "11:35-12:15", "subject": "Письмо"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Букварь"}, {"num": 7, "time": "14:35-15:15", "subject": "Каратэ/ гимнастика"}, {"num": 8, "time": "15:30-16:10", "subject": "Sceince"}, {"num": 9, "time": "16:20-17:00", "subject": "Выполнение домашнего задания"}], "1Б": [{"num": 1, "time": "09:00-09:40", "subject": "Kelajak soati"}, {"num": 2, "time": "9:50-10:30", "subject": "Matematika"}, {"num": 3, "time": "10:45-11:25", "subject": "Alifbe"}, {"num": 4, "time": "11:35-12:15", "subject": "Yozuv"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Informatika"}, {"num": 7, "time": "14:35-15:15", "subject": "Каратэ/ гимнастика"}, {"num": 8, "time": "15:30-16:10", "subject": "Ingliz tili"}, {"num": 9, "time": "16:20-17:00", "subject": "Uy vazifasini bajarish"}], "2A": [{"num": 1, "time": "09:00-09:40", "subject": "ИЗО"}, {"num": 2, "time": "9:50-10:30", "subject": "Английский язык"}, {"num": 3, "time": "10:45-11:25", "subject": "Математика"}, {"num": 4, "time": "11:35-12:15", "subject": "Чтения"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Технология"}, {"num": 7, "time": "14:35-15:15", "subject": "Каратэ/ гимнастика"}, {"num": 8, "time": "15:30-16:10", "subject": "Физкультура"}, {"num": 9, "time": "16:20-17:00", "subject": "Выполнение домашнего задания"}], "2Б": [{"num": 1, "time": "09:00-09:40", "subject": "Kelajak soati"}, {"num": 2, "time": "9:50-10:30", "subject": "Matematika"}, {"num": 3, "time": "10:45-11:25", "subject": "Ona tili"}, {"num": 4, "time": "11:35-12:15", "subject": "Jismoniy tarbiya"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Ingliz tili"}, {"num": 7, "time": "14:35-15:15", "subject": "Каратэ/ гимнастика"}, {"num": 8, "time": "15:30-16:10", "subject": "Tarbiya"}, {"num": 9, "time": "16:20-17:00", "subject": "Uy vazifasini bajarish"}], "3A": [{"num": 1, "time": "09:00-09:40", "subject": "Час будущего"}, {"num": 2, "time": "9:50-10:30", "subject": "Английский язык"}, {"num": 3, "time": "10:45-11:25", "subject": "Matematika"}, {"num": 4, "time": "11:35-12:15", "subject": "Информатика"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Физкультура"}, {"num": 7, "time": "14:35-15:15", "subject": "Русский язык"}, {"num": 8, "time": "15:30-16:10", "subject": "Каратэ/ гимнастика"}, {"num": 9, "time": "16:20-17:00", "subject": "Выполнение домашнего задания"}], "4A": [{"num": 1, "time": "09:00-09:40", "subject": "Час будущего"}, {"num": 2, "time": "9:50-10:30", "subject": "Узбекский язык"}, {"num": 3, "time": "10:45-11:25", "subject": "Физкультура"}, {"num": 4, "time": "11:35-12:15", "subject": "Английский язык"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Математика"}, {"num": 7, "time": "14:35-15:15", "subject": "Русский язык"}, {"num": 8, "time": "15:30-16:10", "subject": "Каратэ/ гимнастика"}, {"num": 9, "time": "16:20-17:00", "subject": "Выполнение домашнего задания"}], "5A": [{"num": 1, "time": "09:00-09:40", "subject": "Час будущего"}, {"num": 2, "time": "9:50-10:30", "subject": "Математика"}, {"num": 3, "time": "10:45-11:25", "subject": "Английский язык"}, {"num": 4, "time": "11:35-12:15", "subject": "ИЗО"}, {"num": 5, "time": "12:25-13:05", "subject": "Узбекский язык"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Русский язык"}, {"num": 7, "time": "14:35-15:15", "subject": "Математический кружок"}, {"num": 8, "time": "15:30-16:10", "subject": "Каратэ/ гимнастика"}, {"num": 9, "time": "16:20-17:00", "subject": "Выполнение домашнего задания"}], "5Б": [{"num": 1, "time": "09:00-09:40", "subject": "Kelajak soati"}, {"num": 2, "time": "9:50-10:30", "subject": "Tasviriy san'at"}, {"num": 3, "time": "10:45-11:25", "subject": "Matematika"}, {"num": 4, "time": "11:35-12:15", "subject": "Tarix"}, {"num": 5, "time": "12:25-13:05", "subject": "Ona tili"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Adabiyot"}, {"num": 7, "time": "14:35-15:15", "subject": "Ingliz tili"}, {"num": 8, "time": "15:30-16:10", "subject": "Каратэ/ гимнастика"}, {"num": 9, "time": "16:20-17:00", "subject": "Uy vazifasini bajarish"}], "6A": [{"num": 1, "time": "09:00-09:40", "subject": "История"}, {"num": 2, "time": "9:50-10:30", "subject": "Физкультура"}, {"num": 3, "time": "10:45-11:25", "subject": "Русский язык"}, {"num": 4, "time": "11:35-12:15", "subject": "Математика"}, {"num": 5, "time": "12:25-13:05", "subject": "Английский язык"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Узбекский язык"}, {"num": 7, "time": "14:35-15:15", "subject": "Технология"}, {"num": 8, "time": "15:30-16:10", "subject": "Час будущего"}, {"num": 9, "time": "16:20-17:00", "subject": "Футбол / Хорография"}], "6Б": [{"num": 1, "time": "09:00-09:40", "subject": "Ona tili"}, {"num": 2, "time": "9:50-10:30", "subject": "Tarix"}, {"num": 3, "time": "10:45-11:25", "subject": "Texnologiya"}, {"num": 4, "time": "11:35-12:15", "subject": "Rus tili"}, {"num": 5, "time": "12:25-13:05", "subject": "Matematika"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Ingliz tili"}, {"num": 7, "time": "14:35-15:15", "subject": "Ona tili"}, {"num": 8, "time": "15:30-16:10", "subject": "Kelajak soati"}, {"num": 9, "time": "16:20-17:00", "subject": "Футбол / Хорография"}], "7A": [{"num": 1, "time": "09:00-09:40", "subject": "Час будущего"}, {"num": 2, "time": "9:50-10:30", "subject": "География"}, {"num": 3, "time": "10:45-11:25", "subject": "Узбекский язык"}, {"num": 4, "time": "11:35-12:15", "subject": "Биология"}, {"num": 5, "time": "12:25-13:05", "subject": "Физика"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Математика"}, {"num": 7, "time": "14:35-15:15", "subject": "Русский язык"}, {"num": 8, "time": "15:30-16:10", "subject": "Технология"}, {"num": 9, "time": "16:20-17:00", "subject": "Футбол / Хорография"}], "8A": [{"num": 1, "time": "09:00-09:40", "subject": "География"}, {"num": 2, "time": "9:50-10:30", "subject": "Алгебра"}, {"num": 3, "time": "10:45-11:25", "subject": "Биология"}, {"num": 4, "time": "11:35-12:15", "subject": "География/ Экономика"}, {"num": 5, "time": "12:25-13:05", "subject": "Русский язык"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Черчение"}, {"num": 7, "time": "14:35-15:15", "subject": "Узбекский язык"}, {"num": 8, "time": "15:30-16:10", "subject": "Физкультура"}, {"num": 9, "time": "16:20-17:00", "subject": "Футбол / Хорография"}], "8Б": [{"num": 1, "time": "09:00-09:40", "subject": "O'zbekiston tarixi"}, {"num": 2, "time": "9:50-10:30", "subject": "Ona tili"}, {"num": 3, "time": "10:45-11:25", "subject": "Fizika"}, {"num": 4, "time": "11:35-12:15", "subject": "Algebra"}, {"num": 5, "time": "12:25-13:05", "subject": "Jahon tarixi"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Iqtisod/ Geografiya"}, {"num": 7, "time": "14:35-15:15", "subject": "Ingliz tili"}, {"num": 8, "time": "15:30-16:10", "subject": "Huquq"}, {"num": 9, "time": "16:20-17:00", "subject": "Футбол / Хорография"}], "9A": [{"num": 1, "time": "09:00-09:40", "subject": "Узбекский язык"}, {"num": 2, "time": "9:50-10:30", "subject": "История Узбекистана"}, {"num": 3, "time": "10:45-11:25", "subject": "География"}, {"num": 4, "time": "11:35-12:15", "subject": "Английский язык"}, {"num": 5, "time": "12:25-13:05", "subject": "Черчение"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Всемирная история"}, {"num": 7, "time": "14:35-15:15", "subject": "Алгебра"}, {"num": 8, "time": "15:30-16:10", "subject": "Литература"}, {"num": 9, "time": "16:20-17:00", "subject": "Футбол / Хорография"}], "10А": [{"num": 1, "time": "09:00-09:40", "subject": "Алгебра"}, {"num": 2, "time": "9:50-10:30", "subject": "IELTS"}, {"num": 3, "time": "10:45-11:25", "subject": "Право"}, {"num": 4, "time": "11:35-12:15", "subject": "История Узбекистана"}, {"num": 5, "time": "12:25-13:05", "subject": "География"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "НДВП"}, {"num": 7, "time": "14:35-15:15", "subject": "Английский язык"}, {"num": 8, "time": "15:30-16:10", "subject": "Узбекский язык"}, {"num": 9, "time": "16:20-17:00", "subject": "Индивидуальная работа"}]}, "tue": {"1A": [{"num": 1, "time": "09:00-09:40", "subject": "Физкультура"}, {"num": 2, "time": "9:50-10:30", "subject": "Английский язык"}, {"num": 3, "time": "10:45-11:25", "subject": "Технология"}, {"num": 4, "time": "11:35-12:15", "subject": "Математика"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Шахматный кружок"}, {"num": 7, "time": "14:35-15:15", "subject": "Письмо"}, {"num": 8, "time": "15:30-16:10", "subject": "Внеклассное чтение"}, {"num": 9, "time": "16:20-17:00", "subject": "Выполнение домашнего задания"}], "1Б": [{"num": 1, "time": "09:00-09:40", "subject": "Matematika"}, {"num": 2, "time": "9:50-10:30", "subject": "Tasviriy san'at"}, {"num": 3, "time": "10:45-11:25", "subject": "Yozuv"}, {"num": 4, "time": "11:35-12:15", "subject": "Alifbe"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Sceince"}, {"num": 7, "time": "14:35-15:15", "subject": "Шахматный кружок"}, {"num": 8, "time": "15:30-16:10", "subject": "Ingliz tili"}, {"num": 9, "time": "16:20-17:00", "subject": "Uy vazifasini bajarish"}], "2A": [{"num": 1, "time": "09:00-09:40", "subject": "Английский язык"}, {"num": 2, "time": "9:50-10:30", "subject": "Узбекский язык"}, {"num": 3, "time": "10:45-11:25", "subject": "Математика"}, {"num": 4, "time": "11:35-12:15", "subject": "Русский язык"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Китайский язык"}, {"num": 7, "time": "14:35-15:15", "subject": "Воспитание"}, {"num": 8, "time": "15:30-16:10", "subject": "Шахматный кружок"}, {"num": 9, "time": "16:20-17:00", "subject": "Выполнение домашнего задания"}], "2Б": [{"num": 1, "time": "09:00-09:40", "subject": "Ingliz tili"}, {"num": 2, "time": "9:50-10:30", "subject": "Jismoniy tarbiya"}, {"num": 3, "time": "10:45-11:25", "subject": "Tasviriy san'at"}, {"num": 4, "time": "11:35-12:15", "subject": "Matematika"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "O'qish savodxonligi"}, {"num": 7, "time": "14:35-15:15", "subject": "Sceince"}, {"num": 8, "time": "15:30-16:10", "subject": "Шахматный кружок"}, {"num": 9, "time": "16:20-17:00", "subject": "Выполнение домашнего задания"}], "3A": [{"num": 1, "time": "09:00-09:40", "subject": "Технология"}, {"num": 2, "time": "9:50-10:30", "subject": "Математика"}, {"num": 3, "time": "10:45-11:25", "subject": "Узбекский язык"}, {"num": 4, "time": "11:35-12:15", "subject": "Английский язык"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "ИЗО"}, {"num": 7, "time": "14:35-15:15", "subject": "Китайский язык"}, {"num": 8, "time": "15:30-16:10", "subject": "Выполнение домашнего задания"}, {"num": 9, "time": "16:20-17:00", "subject": "Шахматный кружок"}], "4A": [{"num": 1, "time": "09:00-09:40", "subject": "Математика"}, {"num": 2, "time": "9:50-10:30", "subject": "Русский язык"}, {"num": 3, "time": "10:45-11:25", "subject": "Английский язык"}, {"num": 4, "time": "11:35-12:15", "subject": "ИЗО"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Чтения"}, {"num": 7, "time": "14:35-15:15", "subject": "Sceince"}, {"num": 8, "time": "15:30-16:10", "subject": "Выполнение домашнего задания"}, {"num": 9, "time": "16:20-17:00", "subject": "Шахматный кружок"}], "5A": [{"num": 1, "time": "09:00-09:40", "subject": "Математика"}, {"num": 2, "time": "9:50-10:30", "subject": "Sceince"}, {"num": 3, "time": "10:45-11:25", "subject": "История"}, {"num": 4, "time": "11:35-12:15", "subject": "Литература"}, {"num": 5, "time": "12:25-13:05", "subject": "Физкультура"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Узбекский язык"}, {"num": 7, "time": "14:35-15:15", "subject": "Английский язык"}, {"num": 8, "time": "15:30-16:10", "subject": "Таэквандо/ Юная Леди"}, {"num": 9, "time": "16:20-17:00", "subject": "Выполнение домашнего задания"}], "5Б": [{"num": 1, "time": "09:00-09:40", "subject": "Rus tili"}, {"num": 2, "time": "9:50-10:30", "subject": "Tarbiya"}, {"num": 3, "time": "10:45-11:25", "subject": "Adabiyot"}, {"num": 4, "time": "11:35-12:15", "subject": "Ona tili"}, {"num": 5, "time": "12:25-13:05", "subject": "Matematika"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Ingliz tili"}, {"num": 7, "time": "14:35-15:15", "subject": "Matematikadan to'garak"}, {"num": 8, "time": "15:30-16:10", "subject": "Таэквандо/ Юная Леди"}, {"num": 9, "time": "16:20-17:00", "subject": "Uy vazifasini bajarish"}], "6A": [{"num": 1, "time": "09:00-09:40", "subject": "Sceince"}, {"num": 2, "time": "9:50-10:30", "subject": "Английский язык"}, {"num": 3, "time": "10:45-11:25", "subject": "Физкультура"}, {"num": 4, "time": "11:35-12:15", "subject": "Математика"}, {"num": 5, "time": "12:25-13:05", "subject": "Узбекский язык"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Литература"}, {"num": 7, "time": "14:35-15:15", "subject": "ИЗО"}, {"num": 8, "time": "15:30-16:10", "subject": "Таэквандо/ Юная Леди"}, {"num": 9, "time": "16:20-17:00", "subject": "Выполнение домашнего задания"}], "6Б": [{"num": 1, "time": "09:00-09:40", "subject": "Ingliz tili"}, {"num": 2, "time": "9:50-10:30", "subject": "Matematika"}, {"num": 3, "time": "10:45-11:25", "subject": "Rus tili"}, {"num": 4, "time": "11:35-12:15", "subject": "Xitoy tili"}, {"num": 5, "time": "12:25-13:05", "subject": "Tasviriy san'at"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Ona tili"}, {"num": 7, "time": "14:35-15:15", "subject": "Tarbiya"}, {"num": 8, "time": "15:30-16:10", "subject": "Таэквандо/ Юная Леди"}, {"num": 9, "time": "16:20-17:00", "subject": "Uy vazifasini bajarish"}], "7A": [{"num": 1, "time": "09:00-09:40", "subject": "ИЗО"}, {"num": 2, "time": "9:50-10:30", "subject": "История Узбекистана"}, {"num": 3, "time": "10:45-11:25", "subject": "Китайский язык"}, {"num": 4, "time": "11:35-12:15", "subject": "Английский язык"}, {"num": 5, "time": "12:25-13:05", "subject": "Химия"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Математика"}, {"num": 7, "time": "14:35-15:15", "subject": "Литература"}, {"num": 8, "time": "15:30-16:10", "subject": "Узбекский язык"}, {"num": 9, "time": "16:20-17:00", "subject": "Таэквандо/ Юная Леди"}], "8A": [{"num": 1, "time": "09:00-09:40", "subject": "Узбекский язык"}, {"num": 2, "time": "9:50-10:30", "subject": "Технология"}, {"num": 3, "time": "10:45-11:25", "subject": "Геометрия"}, {"num": 4, "time": "11:35-12:15", "subject": "Химия"}, {"num": 5, "time": "12:25-13:05", "subject": "Китайский язык"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "IT"}, {"num": 7, "time": "14:35-15:15", "subject": "Физкультура"}, {"num": 8, "time": "15:30-16:10", "subject": "Литература"}, {"num": 9, "time": "16:20-17:00", "subject": "Таэквандо/ Юная Леди"}], "8Б": [{"num": 1, "time": "09:00-09:40", "subject": "Adabiyot"}, {"num": 2, "time": "9:50-10:30", "subject": "Geometriya"}, {"num": 3, "time": "10:45-11:25", "subject": "Kimyo"}, {"num": 4, "time": "11:35-12:15", "subject": "Biologiya"}, {"num": 5, "time": "12:25-13:05", "subject": "Biologiya"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Ingliz tili"}, {"num": 7, "time": "14:35-15:15", "subject": "IT"}, {"num": 8, "time": "15:30-16:10", "subject": "Informatika"}, {"num": 9, "time": "16:20-17:00", "subject": "Таэквандо/ Юная Леди"}], "9A": [{"num": 1, "time": "09:00-09:40", "subject": "Физика"}, {"num": 2, "time": "9:50-10:30", "subject": "Химия"}, {"num": 3, "time": "10:45-11:25", "subject": "Биология"}, {"num": 4, "time": "11:35-12:15", "subject": "Узбекский язык"}, {"num": 5, "time": "12:25-13:05", "subject": "IT"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Геометрия"}, {"num": 7, "time": "14:35-15:15", "subject": "Английский язык"}, {"num": 8, "time": "15:30-16:10", "subject": "IELTS"}, {"num": 9, "time": "16:20-17:00", "subject": "Таэквандо/ Юная Леди"}], "10А": [{"num": 1, "time": "09:00-09:40", "subject": "Химия"}, {"num": 2, "time": "9:50-10:30", "subject": "Китайский язык"}, {"num": 3, "time": "10:45-11:25", "subject": "Английский язык"}, {"num": 4, "time": "11:35-12:15", "subject": "Физика"}, {"num": 5, "time": "12:25-13:05", "subject": "Геометрия"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Физкультура"}, {"num": 7, "time": "14:35-15:15", "subject": "Узбекский язык"}, {"num": 8, "time": "15:30-16:10", "subject": "IT"}, {"num": 9, "time": "16:20-17:00", "subject": "Узбекский язык"}]}, "wed": {"1A": [{"num": 1, "time": "09:00-09:40", "subject": "Английский язык"}, {"num": 2, "time": "9:50-10:30", "subject": "Час будущего"}, {"num": 3, "time": "10:45-11:25", "subject": "Букварь"}, {"num": 4, "time": "11:35-12:15", "subject": "Математика"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Музыка"}, {"num": 7, "time": "14:35-15:15", "subject": "Каратэ/ гимнастика"}, {"num": 8, "time": "15:30-16:10", "subject": "Индивидуалная работа"}, {"num": 9, "time": "16:20-17:00", "subject": "Выполнение домашнего задания"}], "1Б": [{"num": 1, "time": "09:00-09:40", "subject": "Matematika"}, {"num": 2, "time": "9:50-10:30", "subject": "Musiqa"}, {"num": 3, "time": "10:45-11:25", "subject": "Ingliz tili"}, {"num": 4, "time": "11:35-12:15", "subject": "Jismoniy tarbiya"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Sinfdan tashqari o'qish"}, {"num": 7, "time": "14:35-15:15", "subject": "Каратэ/ гимнастика"}, {"num": 8, "time": "15:30-16:10", "subject": "Individual ishlash"}, {"num": 9, "time": "16:20-17:00", "subject": "Uy vazifasini bajarish"}], "2A": [{"num": 1, "time": "09:00-09:40", "subject": "Русский язык"}, {"num": 2, "time": "9:50-10:30", "subject": "Математика"}, {"num": 3, "time": "10:45-11:25", "subject": "Узбекский язык"}, {"num": 4, "time": "11:35-12:15", "subject": "Sceince"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Английский язык"}, {"num": 7, "time": "14:35-15:15", "subject": "Каратэ/ гимнастика"}, {"num": 8, "time": "15:30-16:10", "subject": "Чтения"}, {"num": 9, "time": "16:20-17:00", "subject": "Выполнение домашнего задания"}], "2Б": [{"num": 1, "time": "09:00-09:40", "subject": "Musiqa"}, {"num": 2, "time": "9:50-10:30", "subject": "Ona tili"}, {"num": 3, "time": "10:45-11:25", "subject": "Matematika"}, {"num": 4, "time": "11:35-12:15", "subject": "Ingliz tili"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Xitoy tili"}, {"num": 7, "time": "14:35-15:15", "subject": "Каратэ/ гимнастика"}, {"num": 8, "time": "15:30-16:10", "subject": "O'qish savodxonligi"}, {"num": 9, "time": "16:20-17:00", "subject": "Uy vazifasini bajarish"}], "3A": [{"num": 1, "time": "09:00-09:40", "subject": "Английский язык"}, {"num": 2, "time": "9:50-10:30", "subject": "Узбекский язык"}, {"num": 3, "time": "10:45-11:25", "subject": "Русский язык"}, {"num": 4, "time": "11:35-12:15", "subject": "Чтения"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Математика"}, {"num": 7, "time": "14:35-15:15", "subject": "Sceince"}, {"num": 8, "time": "15:30-16:10", "subject": "Каратэ/ гимнастика"}, {"num": 9, "time": "16:20-17:00", "subject": "Выполнение домашнего задания"}], "4A": [{"num": 1, "time": "09:00-09:40", "subject": "Узбекский язык"}, {"num": 2, "time": "9:50-10:30", "subject": "Математика"}, {"num": 3, "time": "10:45-11:25", "subject": "Музыка"}, {"num": 4, "time": "11:35-12:15", "subject": "Информатика"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Воспитание"}, {"num": 7, "time": "14:35-15:15", "subject": "Чтения"}, {"num": 8, "time": "15:30-16:10", "subject": "Каратэ/ гимнастика"}, {"num": 9, "time": "16:20-17:00", "subject": "Китайский язык"}], "5A": [{"num": 1, "time": "09:00-09:40", "subject": "Русский язык"}, {"num": 2, "time": "9:50-10:30", "subject": "Информатика"}, {"num": 3, "time": "10:45-11:25", "subject": "Английский язык"}, {"num": 4, "time": "11:35-12:15", "subject": "Китайский язык"}, {"num": 5, "time": "12:25-13:05", "subject": "Узбекский язык"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Технология"}, {"num": 7, "time": "14:35-15:15", "subject": "Английский язык"}, {"num": 8, "time": "15:30-16:10", "subject": "Каратэ/ гимнастика"}, {"num": 9, "time": "16:20-17:00", "subject": "Выполнение домашнего задания"}], "5Б": [{"num": 1, "time": "09:00-09:40", "subject": "Tarix"}, {"num": 2, "time": "9:50-10:30", "subject": "Ingliz tili"}, {"num": 3, "time": "10:45-11:25", "subject": "Informatika"}, {"num": 4, "time": "11:35-12:15", "subject": "Ona tili"}, {"num": 5, "time": "12:25-13:05", "subject": "Matematika"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Jismoniy tarbiya"}, {"num": 7, "time": "14:35-15:15", "subject": "Texnologiya"}, {"num": 8, "time": "15:30-16:10", "subject": "Каратэ/ гимнастика"}, {"num": 9, "time": "16:20-17:00", "subject": "Uy vazifasini bajarish"}], "6A": [{"num": 1, "time": "09:00-09:40", "subject": "Математика"}, {"num": 2, "time": "9:50-10:30", "subject": "Китайский язык"}, {"num": 3, "time": "10:45-11:25", "subject": "История"}, {"num": 4, "time": "11:35-12:15", "subject": "Русский язык"}, {"num": 5, "time": "12:25-13:05", "subject": "Английский язык"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Узбекский язык"}, {"num": 7, "time": "14:35-15:15", "subject": "Выполнение домашние задание"}, {"num": 8, "time": "15:30-16:10", "subject": "Воспитание"}, {"num": 9, "time": "16:20-17:00", "subject": "Футбол / Хорография"}], "6Б": [{"num": 1, "time": "09:00-09:40", "subject": "Sceince"}, {"num": 2, "time": "9:50-10:30", "subject": "Ingliz tili"}, {"num": 3, "time": "10:45-11:25", "subject": "Jismoniy tarbiya"}, {"num": 4, "time": "11:35-12:15", "subject": "Matematika"}, {"num": 5, "time": "12:25-13:05", "subject": "Musiqa"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Adabiyot"}, {"num": 7, "time": "14:35-15:15", "subject": "Matematikadan to'garak"}, {"num": 8, "time": "15:30-16:10", "subject": "Uy vazifasini bajarish"}, {"num": 9, "time": "16:20-17:00", "subject": "Футбол / Хорография"}], "7A": [{"num": 1, "time": "09:00-09:40", "subject": "Английский язык"}, {"num": 2, "time": "9:50-10:30", "subject": "Физика"}, {"num": 3, "time": "10:45-11:25", "subject": "Математика"}, {"num": 4, "time": "11:35-12:15", "subject": "Музыка"}, {"num": 5, "time": "12:25-13:05", "subject": "География"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Русский язык"}, {"num": 7, "time": "14:35-15:15", "subject": "Физкультура"}, {"num": 8, "time": "15:30-16:10", "subject": "Узбекский язык"}, {"num": 9, "time": "16:20-17:00", "subject": "Футбол / Хорография"}], "8A": [{"num": 1, "time": "09:00-09:40", "subject": "Алгебра"}, {"num": 2, "time": "9:50-10:30", "subject": "История Узбекистана"}, {"num": 3, "time": "10:45-11:25", "subject": "Английский язык"}, {"num": 4, "time": "11:35-12:15", "subject": "Биология"}, {"num": 5, "time": "12:25-13:05", "subject": "Информатика"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Право"}, {"num": 7, "time": "14:35-15:15", "subject": "Узбекский язык"}, {"num": 8, "time": "15:30-16:10", "subject": "Китайский язык"}, {"num": 9, "time": "16:20-17:00", "subject": "Футбол / Хорография"}], "8Б": [{"num": 1, "time": "09:00-09:40", "subject": "O'zbekiston tarixi"}, {"num": 2, "time": "9:50-10:30", "subject": "Geografiya"}, {"num": 3, "time": "10:45-11:25", "subject": "Tarbiya"}, {"num": 4, "time": "11:35-12:15", "subject": "Ingliz tili"}, {"num": 5, "time": "12:25-13:05", "subject": "Ona tili"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Algebra"}, {"num": 7, "time": "14:35-15:15", "subject": "Xitoy tili"}, {"num": 8, "time": "15:30-16:10", "subject": "Kelajak soati"}, {"num": 9, "time": "16:20-17:00", "subject": "Texnologiya"}], "9A": [{"num": 1, "time": "09:00-09:40", "subject": "Английский язык"}, {"num": 2, "time": "9:50-10:30", "subject": "Физкультура"}, {"num": 3, "time": "10:45-11:25", "subject": "История Узбекистана"}, {"num": 4, "time": "11:35-12:15", "subject": "Право"}, {"num": 5, "time": "12:25-13:05", "subject": "Алгебра"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Экономика / География"}, {"num": 7, "time": "14:35-15:15", "subject": "Русский язык"}, {"num": 8, "time": "15:30-16:10", "subject": "Технология"}, {"num": 9, "time": "16:20-17:00", "subject": "Узбекский язык"}], "10А": [{"num": 1, "time": "09:00-09:40", "subject": "Информатика"}, {"num": 2, "time": "9:50-10:30", "subject": "Всемирная история"}, {"num": 3, "time": "10:45-11:25", "subject": "Алгебра"}, {"num": 4, "time": "11:35-12:15", "subject": "География"}, {"num": 5, "time": "12:25-13:05", "subject": "Литература"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "НДВП"}, {"num": 7, "time": "14:35-15:15", "subject": "Английский язык"}, {"num": 8, "time": "15:30-16:10", "subject": "Индивидуальная работа"}, {"num": 9, "time": "16:20-17:00", "subject": "Воспитание"}]}, "thu": {"1A": [{"num": 1, "time": "09:00-09:40", "subject": "Букварь"}, {"num": 2, "time": "9:50-10:30", "subject": "Математика"}, {"num": 3, "time": "10:45-11:25", "subject": "Английский язык"}, {"num": 4, "time": "11:35-12:15", "subject": "Письмо"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Шахматный кружок"}, {"num": 7, "time": "14:35-15:15", "subject": "Рисование"}, {"num": 8, "time": "15:30-16:10", "subject": "Воспитание"}, {"num": 9, "time": "16:20-17:00", "subject": "Выполнение домашнего задания"}], "1Б": [{"num": 1, "time": "09:00-09:40", "subject": "Alifbe"}, {"num": 2, "time": "9:50-10:30", "subject": "Matematika"}, {"num": 3, "time": "10:45-11:25", "subject": "Yozuv"}, {"num": 4, "time": "11:35-12:15", "subject": "Ingliz tili"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Tarbiya"}, {"num": 7, "time": "14:35-15:15", "subject": "Шахматный кружок"}, {"num": 8, "time": "15:30-16:10", "subject": "Atrofimizdagi olam"}, {"num": 9, "time": "16:20-17:00", "subject": "Uy vazifasini bajarish"}], "2A": [{"num": 1, "time": "09:00-09:40", "subject": "Чтения"}, {"num": 2, "time": "9:50-10:30", "subject": "Музыка"}, {"num": 3, "time": "10:45-11:25", "subject": "Математика"}, {"num": 4, "time": "11:35-12:15", "subject": "Физкультура"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Английский язык"}, {"num": 7, "time": "14:35-15:15", "subject": "Русский язык"}, {"num": 8, "time": "15:30-16:10", "subject": "Шахматный кружок"}, {"num": 9, "time": "16:20-17:00", "subject": "Выполнение домашнего задания"}], "2Б": [{"num": 1, "time": "09:00-09:40", "subject": "Ingliz tili"}, {"num": 2, "time": "9:50-10:30", "subject": "Informatika"}, {"num": 3, "time": "10:45-11:25", "subject": "Matematika"}, {"num": 4, "time": "11:35-12:15", "subject": "Ona tili"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "O'qish savodxonligi"}, {"num": 7, "time": "14:35-15:15", "subject": "Sinfdan tashqari o'qish"}, {"num": 8, "time": "15:30-16:10", "subject": "Шахматный кружок"}, {"num": 9, "time": "16:20-17:00", "subject": "Uy vazifasini bajarish"}], "3A": [{"num": 1, "time": "09:00-09:40", "subject": "Музыка"}, {"num": 2, "time": "9:50-10:30", "subject": "Физкультура"}, {"num": 3, "time": "10:45-11:25", "subject": "Математика"}, {"num": 4, "time": "11:35-12:15", "subject": "Чтения"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Русский язык"}, {"num": 7, "time": "14:35-15:15", "subject": "Английский язык"}, {"num": 8, "time": "15:30-16:10", "subject": "Выполнение домашнего задания"}, {"num": 9, "time": "16:20-17:00", "subject": "Шахматный кружок"}], "4A": [{"num": 1, "time": "09:00-09:40", "subject": "Математика"}, {"num": 2, "time": "9:50-10:30", "subject": "Технология"}, {"num": 3, "time": "10:45-11:25", "subject": "Физкультура"}, {"num": 4, "time": "11:35-12:15", "subject": "Английский язык"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Английский язык"}, {"num": 7, "time": "14:35-15:15", "subject": "Русский язык"}, {"num": 8, "time": "15:30-16:10", "subject": "Выполнение домашнего задания"}, {"num": 9, "time": "16:20-17:00", "subject": "Шахматный кружок"}], "5A": [{"num": 1, "time": "09:00-09:40", "subject": "Математика"}, {"num": 2, "time": "9:50-10:30", "subject": "История"}, {"num": 3, "time": "10:45-11:25", "subject": "Музыка"}, {"num": 4, "time": "11:35-12:15", "subject": "Литература"}, {"num": 5, "time": "12:25-13:05", "subject": "Sceince"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Китайский язык"}, {"num": 7, "time": "14:35-15:15", "subject": "Таэквандо/ Юная Леди"}, {"num": 8, "time": "15:30-16:10", "subject": "Английский язык"}, {"num": 9, "time": "16:20-17:00", "subject": "Выполнение домашнего задания"}], "5Б": [{"num": 1, "time": "09:00-09:40", "subject": "Sceince"}, {"num": 2, "time": "9:50-10:30", "subject": "Matematika"}, {"num": 3, "time": "10:45-11:25", "subject": "Xitoy tili"}, {"num": 4, "time": "11:35-12:15", "subject": "Ona tili"}, {"num": 5, "time": "12:25-13:05", "subject": "Ingliz tili"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Individual ishlash"}, {"num": 7, "time": "14:35-15:15", "subject": "Таэквандо/ Юная Леди"}, {"num": 8, "time": "15:30-16:10", "subject": "Musiqa"}, {"num": 9, "time": "16:20-17:00", "subject": "Uy vazifasini bajarish"}], "6A": [{"num": 1, "time": "09:00-09:40", "subject": "Английский язык"}, {"num": 2, "time": "9:50-10:30", "subject": "Sceince"}, {"num": 3, "time": "10:45-11:25", "subject": "Математика"}, {"num": 4, "time": "11:35-12:15", "subject": "Китайский язык"}, {"num": 5, "time": "12:25-13:05", "subject": "Литература"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Музыка"}, {"num": 7, "time": "14:35-15:15", "subject": "Таэквандо/ Юная Леди"}, {"num": 8, "time": "15:30-16:10", "subject": "Математический кружок"}, {"num": 9, "time": "16:20-17:00", "subject": "Выполнение домашнего задания"}], "6Б": [{"num": 1, "time": "09:00-09:40", "subject": "Ona tili"}, {"num": 2, "time": "9:50-10:30", "subject": "Ingliz tili"}, {"num": 3, "time": "10:45-11:25", "subject": "Adabiyot"}, {"num": 4, "time": "11:35-12:15", "subject": "Matematika"}, {"num": 5, "time": "12:25-13:05", "subject": "Xitoy tili"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Sceince"}, {"num": 7, "time": "14:35-15:15", "subject": "Таэквандо/ Юная Леди"}, {"num": 8, "time": "15:30-16:10", "subject": "Matematikadan to'garak"}, {"num": 9, "time": "16:20-17:00", "subject": "Uy vazifasini bajarish"}], "7A": [{"num": 1, "time": "09:00-09:40", "subject": "Всемирная история"}, {"num": 2, "time": "9:50-10:30", "subject": "Китайский язык"}, {"num": 3, "time": "10:45-11:25", "subject": "Литература"}, {"num": 4, "time": "11:35-12:15", "subject": "Химия"}, {"num": 5, "time": "12:25-13:05", "subject": "Английский язык"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Математика"}, {"num": 7, "time": "14:35-15:15", "subject": "Английский язык"}, {"num": 8, "time": "15:30-16:10", "subject": "Таэквандо/ Юная Леди"}, {"num": 9, "time": "16:20-17:00", "subject": "Выполнение домашнего задания"}], "8A": [{"num": 1, "time": "09:00-09:40", "subject": "Геометрия"}, {"num": 2, "time": "9:50-10:30", "subject": "Физика"}, {"num": 3, "time": "10:45-11:25", "subject": "Всемирная история"}, {"num": 4, "time": "11:35-12:15", "subject": "Английский язык"}, {"num": 5, "time": "12:25-13:05", "subject": "Химия"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Русский язык"}, {"num": 7, "time": "14:35-15:15", "subject": "Физика"}, {"num": 8, "time": "15:30-16:10", "subject": "Таэквандо/ Юная Леди"}, {"num": 9, "time": "16:20-17:00", "subject": "Выполнение домашнего задания"}], "8Б": [{"num": 1, "time": "09:00-09:40", "subject": "Kimyo"}, {"num": 2, "time": "9:50-10:30", "subject": "Ona tili"}, {"num": 3, "time": "10:45-11:25", "subject": "Ingliz tili"}, {"num": 4, "time": "11:35-12:15", "subject": "Geometriya"}, {"num": 5, "time": "12:25-13:05", "subject": "Adabiyot"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Informatika"}, {"num": 7, "time": "14:35-15:15", "subject": "Rus tili"}, {"num": 8, "time": "15:30-16:10", "subject": "Таэквандо/ Юная Леди"}, {"num": 9, "time": "16:20-17:00", "subject": "Выполнение домашнего задания"}], "9A": [{"num": 1, "time": "09:00-09:40", "subject": "Физкультура"}, {"num": 2, "time": "9:50-10:30", "subject": "Литература"}, {"num": 3, "time": "10:45-11:25", "subject": "Химия"}, {"num": 4, "time": "11:35-12:15", "subject": "Информатика"}, {"num": 5, "time": "12:25-13:05", "subject": "Физика"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Геометрия"}, {"num": 7, "time": "14:35-15:15", "subject": "Английский язык"}, {"num": 8, "time": "15:30-16:10", "subject": "Таэквандо/ Юная Леди"}, {"num": 9, "time": "16:20-17:00", "subject": "Китайский язык"}], "10А": [{"num": 1, "time": "09:00-09:40", "subject": "Русский язык"}, {"num": 2, "time": "9:50-10:30", "subject": "Химия"}, {"num": 3, "time": "10:45-11:25", "subject": "Геометрия"}, {"num": 4, "time": "11:35-12:15", "subject": "Биология"}, {"num": 5, "time": "12:25-13:05", "subject": "Физкультура"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Английский язык"}, {"num": 7, "time": "14:35-15:15", "subject": "Китайский язык"}, {"num": 8, "time": "15:30-16:10", "subject": "IELTS"}, {"num": 9, "time": "16:20-17:00", "subject": "Индивидуальная работа"}]}, "fri": {"1A": [{"num": 1, "time": "09:00-09:40", "subject": "Английский язык"}, {"num": 2, "time": "9:50-10:30", "subject": "Письмо"}, {"num": 3, "time": "10:45-11:25", "subject": "Букварь"}, {"num": 4, "time": "11:35-12:15", "subject": "Математика"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Робототехника"}, {"num": 7, "time": "14:35-15:15", "subject": "Кружок английского языка"}, {"num": 8, "time": "15:30-16:10", "subject": "Индивидуальная работа"}, {"num": 9, "time": "16:20-17:00", "subject": "Выполнение домашнего задания"}], "1Б": [{"num": 1, "time": "09:00-09:40", "subject": "Yozuv"}, {"num": 2, "time": "9:50-10:30", "subject": "Texnologiya"}, {"num": 3, "time": "10:45-11:25", "subject": "Ingliz tili"}, {"num": 4, "time": "11:35-12:15", "subject": "Matematika"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Alifbe"}, {"num": 7, "time": "14:35-15:15", "subject": "Individual ishlash"}, {"num": 8, "time": "15:30-16:10", "subject": "Robototexnika"}, {"num": 9, "time": "16:20-17:00", "subject": "Uy vazifasini bajarish"}], "2A": [{"num": 1, "time": "09:00-09:40", "subject": "Информатика"}, {"num": 2, "time": "9:50-10:30", "subject": "Русский язык"}, {"num": 3, "time": "10:45-11:25", "subject": "Робототехника"}, {"num": 4, "time": "11:35-12:15", "subject": "Английский язык"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Математика"}, {"num": 7, "time": "14:35-15:15", "subject": "Час будущего"}, {"num": 8, "time": "15:30-16:10", "subject": "Чтения"}, {"num": 9, "time": "16:20-17:00", "subject": "Выполнение домашнего задания"}], "2Б": [{"num": 1, "time": "09:00-09:40", "subject": "Matematika"}, {"num": 2, "time": "9:50-10:30", "subject": "Ingliz tili"}, {"num": 3, "time": "10:45-11:25", "subject": "Робототехника"}, {"num": 4, "time": "11:35-12:15", "subject": "O'qish savodxonligi"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Texnologiya"}, {"num": 7, "time": "14:35-15:15", "subject": "Individual ishlash"}, {"num": 8, "time": "15:30-16:10", "subject": "Ona tili"}, {"num": 9, "time": "16:20-17:00", "subject": "Uy vazifasini bajarish"}], "3A": [{"num": 1, "time": "09:00-09:40", "subject": "Математика"}, {"num": 2, "time": "9:50-10:30", "subject": "Робототехника"}, {"num": 3, "time": "10:45-11:25", "subject": "Чтения"}, {"num": 4, "time": "11:35-12:15", "subject": "Английский язык"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Русский язык"}, {"num": 7, "time": "14:35-15:15", "subject": "Индивидуальная работа"}, {"num": 8, "time": "15:30-16:10", "subject": "Воспитание"}, {"num": 9, "time": "16:20-17:00", "subject": "Выполнение домашнего задания"}], "4A": [{"num": 1, "time": "09:00-09:40", "subject": "Математика"}, {"num": 2, "time": "9:50-10:30", "subject": "Чтения"}, {"num": 3, "time": "10:45-11:25", "subject": "Английский язык"}, {"num": 4, "time": "11:35-12:15", "subject": "Русский язык"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Внеклассное чтение"}, {"num": 7, "time": "14:35-15:15", "subject": "Индивидуальная работа"}, {"num": 8, "time": "15:30-16:10", "subject": "Выполнение домашнего задания"}, {"num": 9, "time": "16:20-17:00", "subject": "Робототехника"}], "5A": [{"num": 1, "time": "09:00-09:40", "subject": "Робототехника"}, {"num": 2, "time": "9:50-10:30", "subject": "Физкультура"}, {"num": 3, "time": "10:45-11:25", "subject": "Математика"}, {"num": 4, "time": "11:35-12:15", "subject": "Математика"}, {"num": 5, "time": "12:25-13:05", "subject": "Русский язык"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Воспитание"}, {"num": 7, "time": "14:35-15:15", "subject": "Индивидуальная работа"}, {"num": 8, "time": "15:30-16:10", "subject": "English time"}, {"num": 9, "time": "16:20-17:00", "subject": "Выполнение домашнего задания"}], "5Б": [{"num": 1, "time": "09:00-09:40", "subject": "Робототехника"}, {"num": 2, "time": "9:50-10:30", "subject": "Rus tili"}, {"num": 3, "time": "10:45-11:25", "subject": "Jismoniy tarbiya"}, {"num": 4, "time": "11:35-12:15", "subject": "Xitoy tili"}, {"num": 5, "time": "12:25-13:05", "subject": "Ingliz tili"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Sinfdan tashqari o'qish"}, {"num": 7, "time": "14:35-15:15", "subject": "Matematika"}, {"num": 9, "time": "16:20-17:00", "subject": "Uy vazifasini bajarish"}], "6A": [{"num": 1, "time": "09:00-09:40", "subject": "Математика"}, {"num": 2, "time": "9:50-10:30", "subject": "Английский язык"}, {"num": 3, "time": "10:45-11:25", "subject": "Информатика"}, {"num": 4, "time": "11:35-12:15", "subject": "Робототехника"}, {"num": 5, "time": "12:25-13:05", "subject": "Sceince"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Русский язык"}, {"num": 7, "time": "14:35-15:15", "subject": "Физкультура"}, {"num": 9, "time": "16:20-17:00", "subject": "Выполнение домашнего задания"}], "6Б": [{"num": 1, "time": "09:00-09:40", "subject": "Sceince"}, {"num": 2, "time": "9:50-10:30", "subject": "Informatika"}, {"num": 3, "time": "10:45-11:25", "subject": "Tarix"}, {"num": 4, "time": "11:35-12:15", "subject": "Робототехника"}, {"num": 5, "time": "12:25-13:05", "subject": "Matematika"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Ingliz tili"}, {"num": 7, "time": "14:35-15:15", "subject": "Jismoniy tarbiya"}, {"num": 9, "time": "16:20-17:00", "subject": "Uy vazifasini bajarish"}], "7A": [{"num": 1, "time": "09:00-09:40", "subject": "История Узбекистана"}, {"num": 2, "time": "9:50-10:30", "subject": "Математика"}, {"num": 3, "time": "10:45-11:25", "subject": "Биология"}, {"num": 4, "time": "11:35-12:15", "subject": "Информатика"}, {"num": 5, "time": "12:25-13:05", "subject": "Английский язык"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Физкультура"}, {"num": 7, "time": "14:35-15:15", "subject": "Робототехника"}, {"num": 8, "time": "15:30-16:10", "subject": "Воспитание"}, {"num": 9, "time": "16:20-17:00", "subject": "Выполнение домашнего задания"}], "8A": [{"num": 1, "time": "09:00-09:40", "subject": "Английский язык"}, {"num": 2, "time": "9:50-10:30", "subject": "История Узбекистана"}, {"num": 3, "time": "10:45-11:25", "subject": "Английский язык"}, {"num": 4, "time": "11:35-12:15", "subject": "Английский язык"}, {"num": 5, "time": "12:25-13:05", "subject": "Алгебра"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Час будущего"}, {"num": 7, "time": "14:35-15:15", "subject": "Литература"}, {"num": 8, "time": "15:30-16:10", "subject": "IT"}, {"num": 9, "time": "16:20-17:00", "subject": "Выполнение домашнего задания"}], "8Б": [{"num": 1, "time": "09:00-09:40", "subject": "Algebra"}, {"num": 2, "time": "9:50-10:30", "subject": "Xitoy tili"}, {"num": 3, "time": "10:45-11:25", "subject": "Rus tili"}, {"num": 4, "time": "11:35-12:15", "subject": "Fizika"}, {"num": 5, "time": "12:25-13:05", "subject": "Jismoniy tarbiya"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Biologiya"}, {"num": 7, "time": "14:35-15:15", "subject": "Ingliz tili"}, {"num": 8, "time": "15:30-16:10", "subject": "IT"}, {"num": 9, "time": "16:20-17:00", "subject": "Выполнение домашнего задания"}], "9A": [{"num": 1, "time": "09:00-09:40", "subject": "Английский язык"}, {"num": 2, "time": "9:50-10:30", "subject": "Биология"}, {"num": 3, "time": "10:45-11:25", "subject": "Китайский язык"}, {"num": 4, "time": "11:35-12:15", "subject": "Русский язык"}, {"num": 5, "time": "12:25-13:05", "subject": "Информатика"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Алгебра"}, {"num": 7, "time": "14:35-15:15", "subject": "IT"}, {"num": 8, "time": "15:30-16:10", "subject": "Индивидуальная работа"}, {"num": 9, "time": "16:20-17:00", "subject": "IELTS"}], "10А": [{"num": 1, "time": "09:00-09:40", "subject": "Литература"}, {"num": 2, "time": "9:50-10:30", "subject": "Алгебра"}, {"num": 3, "time": "10:45-11:25", "subject": "Физика"}, {"num": 4, "time": "11:35-12:15", "subject": "Биология"}, {"num": 5, "time": "12:25-13:05", "subject": "IELTS"}, {"num": null, "time": "13:05-13:45", "subject": "__BREAK__"}, {"num": 6, "time": "13:45-14:25", "subject": "Информатика"}, {"num": 7, "time": "14:35-15:15", "subject": "Английский язык"}, {"num": 8, "time": "15:30-16:10", "subject": "Индивидуальная работа"}, {"num": 9, "time": "16:20-17:00", "subject": "IT"}]}};
-const TEACHERS = {"1A": {"name": "Хужаева Зумрад Фархадовна", "role": "учитель начальных классов", "phone": "94-178-87-70"}, "1Б": {"name": "Анорбоева Зебинисо Муродулла кизи", "role": "учитель начальных классов", "phone": "93-314-67-70"}, "2A": {"name": "Далмурзаева Гулчехра Серикбаевна", "role": "учитель начальных классов", "phone": "90-941-41-88"}, "2Б": {"name": "Алижонова Мохизар Уктамжон кизи", "role": "учитель узбекских начальных классов", "phone": "99-975-94-54"}, "3A": {"name": "Эргашева Саодатхон Дилмуроджоновна", "role": "учитель начальных классов", "phone": "94-327-25-22"}, "4A": {"name": "Палванова Мадина Абдуллаевна", "role": "учитель начальных классов", "phone": "91-422-42-92"}, "5A": {"name": "Имомназарова Дурдона Кобилжон кизи", "role": "физ-ра, таэквондо, кл. рук. 5А", "phone": "88-241-37-37"}, "5Б": {"name": "Яхшибаева Наргиза Алламуродовна", "role": "учитель математики, кл. рук. 5Б", "phone": "50-783-21-73"}, "6A": {"name": "Жамолхонова Султонахон Алихон кизи", "role": "учитель английского языка, кл. рук. 6А, завуч", "phone": "90-602-49-23"}, "6Б": {"name": "Яхшибаева Наргиза Алламуродовна", "role": "учитель математики, кл. рук. 6Б", "phone": "50-783-21-73"}, "7A": {"name": "Мусаева Феруза Абдурахимовна", "role": "учитель русского языка и литературы, кл. рук. 7А", "phone": "97-470-23-08"}, "8A": {"name": "Садикова Шоира Бегмуратовна", "role": "учитель китайского языка, кл. рук. 8А", "phone": "91-163-95-14"}, "8Б": {"name": "", "role": "классный руководитель уточняется", "phone": ""}, "9A": {"name": "Джураева Сайёра Мухаммедовна", "role": "учитель узбекского языка, кл. рук. 9А", "phone": "97-441-74-54"}, "10А": {"name": "Джураева Сайёра Мухаммедовна", "role": "учитель узбекского языка, кл. рук. 10А", "phone": "97-441-74-54"}};
-
-(function(){
-
-  const CLASS_ORDER = ["1A","1Б","2A","2Б","3A","4A","5A","5Б","6A","6Б","7A","8A","8Б","9A","10А"];
-  const DAY_KEYS = ["mon","tue","wed","thu","fri"];
-  const DAY_LABEL = {mon:"Понедельник", tue:"Вторник", wed:"Среда", thu:"Четверг", fri:"Пятница"};
-  const DAY_COLOR = {mon:"var(--mon)", tue:"var(--tue)", wed:"var(--wed)", thu:"var(--thu)", fri:"var(--fri)"};
-  const JS_DAY_TO_KEY = {1:"mon", 2:"tue", 3:"wed", 4:"thu", 5:"fri"}; // 0=Sun,6=Sat -> not a school day
-
-  function renderLegend(todayKey){
-    const legend = document.getElementById('legend');
-    legend.innerHTML = "";
-    DAY_KEYS.forEach(function(k){
-      const dot = document.createElement('span');
-      dot.innerHTML = '<span class="dot" style="background:'+DAY_COLOR[k]+'"></span>' + DAY_LABEL[k] + (k===todayKey ? " — сегодня" : "");
-      legend.appendChild(dot);
-    });
-  }
-
-  function renderClassPicker(activeCls, onPick){
-    const picker = document.getElementById('classPicker');
-    picker.querySelectorAll('.class-btn').forEach(b=>b.remove());
-    CLASS_ORDER.forEach(function(cls){
-      const btn = document.createElement('button');
-      btn.type = "button";
-      btn.className = "class-btn" + (cls===activeCls ? " active" : "");
-      btn.textContent = cls;
-      btn.setAttribute('aria-label', cls + ' класс');
-      btn.addEventListener('click', function(){ onPick(cls); });
-      picker.appendChild(btn);
-    });
-  }
-
-  function renderTeacher(cls){
-    const strip = document.getElementById('teacherStrip');
-    const info = TEACHERS[cls];
-    if(!info || !info.name){
-      strip.style.display = "none";
-      return;
-    }
-    strip.style.display = "flex";
-    document.getElementById('teacherAvatar').textContent = info.name.charAt(0);
-    document.getElementById('teacherName').textContent = info.name;
-    document.getElementById('teacherRole').textContent = info.role || "";
-    const phoneEl = document.getElementById('teacherPhone');
-    if(info.phone){
-      phoneEl.style.display = "inline-block";
-      phoneEl.textContent = info.phone;
-      phoneEl.href = "tel:+998" + info.phone.replace(/-/g, "");
-    } else {
-      phoneEl.style.display = "none";
-    }
-  }
-
-  function renderSchedule(cls, todayKey){
-    const grid = document.getElementById('scheduleGrid');
-    grid.innerHTML = "";
-
-    DAY_KEYS.forEach(function(dayKey){
-      const isToday = dayKey === todayKey;
-      const col = document.createElement('div');
-      col.className = "col-12 col-sm-6 col-lg-4 col-xl-2dot4 col-xxl";
-      col.style.flex = "1 1 220px";
-
-      const lessons = (SCHEDULE[dayKey] && SCHEDULE[dayKey][cls]) || [];
-
-      let listHtml = "";
-      if(lessons.length === 0){
-        listHtml = '<div class="empty-note">Уроков нет</div>';
-      } else {
-        listHtml = '<ul class="lesson-list">' + lessons.map(function(item){
-          const isBreak = item.subject === "__BREAK__";
-          if(isBreak){
-            return '<li class="lesson-item is-break">' +
-                     '<span class="lesson-num">•</span>' +
-                     '<span class="lesson-time">'+item.time+'</span>' +
-                     '<span class="lesson-name flex-grow-1">Перерыв</span>' +
-                   '</li>';
-          }
-          return '<li class="lesson-item">' +
-                   '<span class="lesson-num">'+ (item.num !== null ? item.num : "•") +'</span>' +
-                   '<span class="lesson-time">'+item.time+'</span>' +
-                   '<span class="lesson-name flex-grow-1">'+item.subject+'</span>' +
-                 '</li>';
-        }).join("") + '</ul>';
+        --mon: #ffb4a2;
+        --tue: #ffd6a5;
+        --wed: #fce38a;
+        --thu: #b9e6a5;
+        --fri: #a0dde6;
       }
 
-      col.innerHTML =
-        '<div class="day-card' + (isToday ? ' is-today' : '') + '">' +
-          '<div class="day-head" style="background:' + DAY_COLOR[dayKey] + '">' +
-            '<span>' + DAY_LABEL[dayKey] + '</span>' +
-            (isToday ? '<span class="today-pill">Сегодня</span>' : '') +
-          '</div>' +
-          listHtml +
-        '</div>';
+      * {
+        box-sizing: border-box;
+      }
 
-      grid.appendChild(col);
-    });
-  }
+      body {
+        background: linear-gradient(var(--paper-line) 1px, transparent 1px);
+        background-size: 100% 42px;
+        background-color: var(--paper);
+        font-family: "Nunito", sans-serif;
+        color: var(--ink);
+        min-height: 100vh;
+        padding-bottom: 60px;
+      }
 
-  function init(){
-    const now = new Date();
-    const jsDay = now.getDay(); // 0=Sun..6=Sat
-    const todayKey = JS_DAY_TO_KEY[jsDay] || null;
+      .brand-mark {
+        font-family: "Baloo 2", sans-serif;
+        font-weight: 800;
+      }
 
-    document.getElementById('todayNameLabel').textContent =
-      (todayKey ? DAY_LABEL[todayKey].toLowerCase() : "выходной");
+      .topbar {
+        background: var(--ink);
+        color: #fff;
+        padding: 14px 0;
+      }
+      .topbar .brand-mark {
+        font-size: 1.3rem;
+        letter-spacing: 0.3px;
+      }
+      .topbar .brand-mark span {
+        color: var(--gold);
+      }
+      .topbar small {
+        color: rgba(255, 255, 255, 0.55);
+        font-weight: 700;
+      }
 
-    const months = ["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
-    document.getElementById('fullDateLabel').textContent =
-      (todayKey ? DAY_LABEL[todayKey] : (jsDay===0 ? "Воскресенье" : "Суббота")) + ", " + now.getDate() + " " + months[now.getMonth()];
+      .hero {
+        padding: 40px 0 20px;
+      }
+      .hero .eyebrow-date {
+        font-size: 1rem;
+        color: var(--ink-soft);
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+      .hero h1 {
+        font-family: "Baloo 2", sans-serif;
+        font-weight: 800;
+        font-size: clamp(1.9rem, 4.6vw, 2.9rem);
+        line-height: 1.08;
+        margin-bottom: 8px;
+      }
+      .hero .today-underline {
+        text-decoration: underline;
+        text-decoration-color: var(--wed);
+        text-decoration-thickness: 10px;
+        text-underline-offset: -4px;
+        text-decoration-skip-ink: none;
+        position: relative;
+        z-index: 1;
+      }
+      .hero p.lead-text {
+        color: var(--ink-soft);
+        font-size: 1.02rem;
+        max-width: 600px;
+      }
 
-    renderLegend(todayKey);
+      .class-picker {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 4px 0 8px;
+      }
+      .class-btn {
+        font-family: "Baloo 2", sans-serif;
+        font-weight: 700;
+        min-width: 52px;
+        height: 46px;
+        padding: 0 10px;
+        border-radius: 12px;
+        border: 2px solid var(--ink);
+        background: #fff;
+        color: var(--ink);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        transition:
+          transform 0.12s ease,
+          background 0.12s ease,
+          color 0.12s ease;
+      }
+      .class-btn:hover {
+        transform: translateY(-2px);
+      }
+      .class-btn.active {
+        background: var(--ink);
+        color: #fff;
+      }
+      .class-picker-label {
+        font-weight: 800;
+        font-family: "Baloo 2", sans-serif;
+        color: var(--ink-soft);
+        font-size: 0.95rem;
+        align-self: center;
+        margin-right: 6px;
+      }
 
-    let activeClass = CLASS_ORDER[0];
+      .teacher-strip {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: #fff;
+        border: 2px solid var(--ink);
+        border-radius: 14px;
+        padding: 12px 16px;
+        margin: 18px 0 26px;
+        box-shadow: 4px 4px 0 var(--ink);
+        max-width: 640px;
+      }
+      .teacher-avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: var(--gold);
+        border: 2px solid var(--ink);
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Baloo 2", sans-serif;
+        font-weight: 800;
+        font-size: 1.1rem;
+      }
+      .teacher-strip .t-name {
+        font-weight: 800;
+        font-size: 0.95rem;
+      }
+      .teacher-strip .t-role {
+        color: var(--ink-soft);
+        font-size: 0.8rem;
+        font-weight: 700;
+      }
+      .teacher-strip .t-phone {
+        margin-left: auto;
+        font-weight: 800;
+        font-size: 0.88rem;
+        white-space: nowrap;
+        text-decoration: none;
+        color: var(--ink);
+        border: 2px solid var(--ink);
+        border-radius: 999px;
+        padding: 6px 12px;
+      }
+      .teacher-strip .t-phone:hover {
+        background: var(--ink);
+        color: #fff;
+      }
 
-    function refresh(cls){
-      activeClass = cls;
-      renderClassPicker(activeClass, refresh);
-      renderTeacher(activeClass);
-      renderSchedule(activeClass, todayKey);
-    }
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px 18px;
+        margin: 4px 0 26px;
+        font-size: 0.86rem;
+        color: var(--ink-soft);
+        font-weight: 700;
+      }
+      .legend .dot {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 3px;
+        margin-right: 6px;
+        vertical-align: -1px;
+        border: 1.5px solid rgba(0, 0, 0, 0.15);
+      }
 
-    refresh(activeClass);
-  }
+      .day-card {
+        border-radius: 18px;
+        border: 2px solid var(--ink);
+        background: #fff;
+        overflow: hidden;
+        height: 100%;
+        box-shadow: 5px 5px 0 var(--ink);
+        transition:
+          transform 0.15s ease,
+          box-shadow 0.15s ease;
+      }
+      .day-card.is-today {
+        transform: translateY(-6px) scale(1.015);
+        box-shadow: 7px 7px 0 var(--ink);
+      }
+      .day-head {
+        padding: 14px 16px 12px;
+        font-family: "Baloo 2", sans-serif;
+        font-weight: 800;
+        font-size: 1.1rem;
+        border-bottom: 2px solid var(--ink);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .today-pill {
+        font-family: "Nunito", sans-serif;
+        font-size: 0.66rem;
+        font-weight: 800;
+        background: var(--ink);
+        color: #fff;
+        padding: 3px 9px;
+        border-radius: 999px;
+        letter-spacing: 0.3px;
+      }
 
-  document.addEventListener('DOMContentLoaded', init);
-})();
-</script>
+      .lesson-list {
+        list-style: none;
+        margin: 0;
+        padding: 8px 0;
+      }
+      .lesson-item {
+        display: flex;
+        gap: 10px;
+        padding: 8px 16px;
+        align-items: baseline;
+        border-bottom: 1px dashed rgba(43, 42, 76, 0.15);
+      }
+      .lesson-item:last-child {
+        border-bottom: none;
+      }
+      .lesson-num {
+        font-family: "Baloo 2", sans-serif;
+        font-weight: 700;
+        color: var(--ink-soft);
+        font-size: 0.82rem;
+        width: 16px;
+        flex-shrink: 0;
+      }
+      .lesson-time {
+        font-size: 0.7rem;
+        color: var(--ink-soft);
+        font-weight: 700;
+        width: 78px;
+        flex-shrink: 0;
+      }
+      .lesson-name {
+        font-weight: 700;
+        font-size: 0.88rem;
+      }
+      .lesson-item.is-break {
+        background: rgba(43, 42, 76, 0.045);
+        font-style: italic;
+      }
+      .lesson-item.is-break .lesson-name {
+        color: var(--ink-soft);
+        font-weight: 700;
+      }
 
-</body>
+      .day-card.is-today .lesson-item {
+        border-bottom-color: rgba(43, 42, 76, 0.25);
+      }
+      .day-card.is-today .lesson-name {
+        font-weight: 800;
+      }
+
+      .empty-note {
+        padding: 20px 16px;
+        color: var(--ink-soft);
+        font-weight: 700;
+        font-size: 0.88rem;
+      }
+
+      footer.site-footer {
+        text-align: center;
+        color: var(--ink-soft);
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-top: 34px;
+      }
+
+      @media (max-width: 767px) {
+        .day-card.is-today {
+          transform: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <div
+        class="container d-flex align-items-center justify-content-between flex-wrap gap-1"
+      >
+        <span class="brand-mark">Top Level <span>School</span></span>
+        <small>Дневник уроков</small>
+      </div>
+    </div>
+
+    <div class="container hero">
+      <div class="eyebrow-date" id="fullDateLabel">—</div>
+      <h1>
+        Расписание на
+        <span class="today-underline" id="todayNameLabel">сегодня</span>
+      </h1>
+      <p class="lead-text">
+        Выберите класс — дневник покажет всю учебную неделю. День, в котором вы
+        сейчас находитесь, выделен своим цветом и виден сразу.
+      </p>
+
+      <div class="class-picker mt-4" id="classPicker">
+        <span class="class-picker-label">Класс:</span>
+      </div>
+
+      <div class="teacher-strip" id="teacherStrip" style="display: none">
+        <div class="teacher-avatar" id="teacherAvatar">?</div>
+        <div>
+          <div class="t-name" id="teacherName">—</div>
+          <div class="t-role" id="teacherRole">—</div>
+        </div>
+        <a href="#" class="t-phone" id="teacherPhone" style="display: none"></a>
+      </div>
+
+      <div class="legend" id="legend"></div>
+
+      <div class="row g-3" id="scheduleGrid"></div>
+
+      <footer class="site-footer">
+        Нажмите на класс наверху, чтобы посмотреть его расписание.
+      </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      /* ===== Реальные данные: 2026_дарсжадвали.xlsx + информация_об_учителях.docx ===== */
+      const SCHEDULE = {
+        mon: {
+          "1A": [
+            { num: 1, time: "09:00-09:40", subject: "Информатика" },
+            { num: 2, time: "9:50-10:30", subject: "Математика" },
+            { num: 3, time: "10:45-11:25", subject: "Английский язык" },
+            { num: 4, time: "11:35-12:15", subject: "Письмо" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Букварь" },
+            { num: 7, time: "14:35-15:15", subject: "Каратэ/ гимнастика" },
+            { num: 8, time: "15:30-16:10", subject: "Естествознание" },
+            {
+              num: 9,
+              time: "16:20-17:00",
+              subject: "Выполнение домашнего задания",
+            },
+          ],
+          "1В": [
+            { num: 1, time: "09:00-09:40", subject: "Час будущего" },
+            { num: 2, time: "9:50-10:30", subject: "Математика" },
+            { num: 3, time: "10:45-11:25", subject: "Технология" },
+            { num: 4, time: "11:35-12:15", subject: "Букварь" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Английский язык" },
+            { num: 7, time: "14:35-15:15", subject: "Каратэ/ гимнастика" },
+            {
+              num: 8,
+              time: "15:30-16:10",
+              subject: "Изобразительное искусство",
+            },
+            {
+              num: 9,
+              time: "16:20-17:00",
+              subject: "Выполнение домашнего задания",
+            },
+          ],
+          "1Б": [
+            { num: 1, time: "09:00-09:40", subject: "Kelajak soati" },
+            { num: 2, time: "9:50-10:30", subject: "Matematika" },
+            { num: 3, time: "10:45-11:25", subject: "Alifbe" },
+            { num: 4, time: "11:35-12:15", subject: "Yozuv" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Шахматный кружок" },
+            { num: 7, time: "14:35-15:15", subject: "Каратэ/ гимнастика" },
+            { num: 8, time: "15:30-16:10", subject: "Ingliz tili" },
+            { num: 9, time: "16:20-17:00", subject: "Uy vazifasini bajarish" },
+          ],
+          "2A": [
+            { num: 1, time: "09:00-09:40", subject: "ИЗО" },
+            { num: 2, time: "9:50-10:30", subject: "Английский язык" },
+            { num: 3, time: "10:45-11:25", subject: "Математика" },
+            { num: 4, time: "11:35-12:15", subject: "Шахматный кружок" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Чтения" },
+            { num: 7, time: "14:35-15:15", subject: "Технология" },
+            { num: 8, time: "15:30-16:10", subject: "Каратэ/ гимнастика" },
+            { num: 9, time: "16:20-17:00", subject: "Физкультура" },
+          ],
+          "2Б": [
+            { num: 1, time: "09:00-09:40", subject: "Kelajak soati" },
+            { num: 2, time: "9:50-10:30", subject: "Matematika" },
+            { num: 3, time: "10:45-11:25", subject: "Ona tili" },
+            { num: 4, time: "11:35-12:15", subject: "Шахматный кружок" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Jismoniy tarbiya" },
+            { num: 7, time: "14:35-15:15", subject: "Ingliz tili" },
+            { num: 8, time: "15:30-16:10", subject: "Каратэ/ гимнастика" },
+            { num: 9, time: "16:20-17:00", subject: "Tarbiya" },
+          ],
+          "3A": [
+            { num: 1, time: "09:00-09:40", subject: "Час будущего" },
+            { num: 2, time: "9:50-10:30", subject: "Английский язык" },
+            { num: 3, time: "10:45-11:25", subject: "Matematika" },
+            { num: 4, time: "11:35-12:15", subject: "Информатика" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Физкультура" },
+            { num: 7, time: "14:35-15:15", subject: "Русский язык" },
+            { num: 8, time: "15:30-16:10", subject: "Каратэ/ гимнастика" },
+            {
+              num: 9,
+              time: "16:20-17:00",
+              subject: "Выполнение домашнего задания",
+            },
+          ],
+          "4A": [
+            { num: 1, time: "09:00-09:40", subject: "Час будущего" },
+            { num: 2, time: "9:50-10:30", subject: "Узбекский язык" },
+            { num: 3, time: "10:45-11:25", subject: "Физкультура" },
+            { num: 4, time: "11:35-12:15", subject: "Английский язык" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Математика" },
+            { num: 7, time: "14:35-15:15", subject: "Русский язык" },
+            { num: 8, time: "15:30-16:10", subject: "Каратэ/ гимнастика" },
+            {
+              num: 9,
+              time: "16:20-17:00",
+              subject: "Выполнение домашнего задания",
+            },
+          ],
+          "5A": [
+            { num: 1, time: "09:00-09:40", subject: "Час будущего" },
+            { num: 2, time: "9:50-10:30", subject: "Математика" },
+            { num: 3, time: "10:45-11:25", subject: "Английский язык" },
+            { num: 4, time: "11:35-12:15", subject: "ИЗО" },
+            { num: 5, time: "12:25-13:05", subject: "Узбекский язык" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Русский язык" },
+            { num: 7, time: "14:35-15:15", subject: "Математический кружок" },
+            { num: 8, time: "15:30-16:10", subject: "Каратэ/ гимнастика" },
+            {
+              num: 9,
+              time: "16:20-17:00",
+              subject: "Выполнение домашнего задания",
+            },
+          ],
+          "5Б": [
+            { num: 1, time: "09:00-09:40", subject: "Kelajak soati" },
+            { num: 2, time: "9:50-10:30", subject: "Tasviriy san'at" },
+            { num: 3, time: "10:45-11:25", subject: "Matematika" },
+            { num: 4, time: "11:35-12:15", subject: "Tarix" },
+            { num: 5, time: "12:25-13:05", subject: "Ona tili" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Adabiyot" },
+            { num: 7, time: "14:35-15:15", subject: "Ingliz tili" },
+            { num: 8, time: "15:30-16:10", subject: "Каратэ/ гимнастика" },
+            { num: 9, time: "16:20-17:00", subject: "Uy vazifasini bajarish" },
+          ],
+          "6A": [
+            { num: 1, time: "09:00-09:40", subject: "История" },
+            { num: 2, time: "9:50-10:30", subject: "Физкультура" },
+            { num: 3, time: "10:45-11:25", subject: "Русский язык" },
+            { num: 4, time: "11:35-12:15", subject: "Математика" },
+            { num: 5, time: "12:25-13:05", subject: "Английский язык" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Узбекский язык" },
+            { num: 7, time: "14:35-15:15", subject: "Технология" },
+            { num: 8, time: "15:30-16:10", subject: "Час будущего" },
+            { num: 9, time: "16:20-17:00", subject: "Футбол / Хорография" },
+          ],
+          "6Б": [
+            { num: 1, time: "09:00-09:40", subject: "Ona tili" },
+            { num: 2, time: "9:50-10:30", subject: "Tarix" },
+            { num: 3, time: "10:45-11:25", subject: "Texnologiya" },
+            { num: 4, time: "11:35-12:15", subject: "Rus tili" },
+            { num: 5, time: "12:25-13:05", subject: "Matematika" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Ingliz tili" },
+            { num: 7, time: "14:35-15:15", subject: "Ona tili" },
+            { num: 8, time: "15:30-16:10", subject: "Kelajak soati" },
+            { num: 9, time: "16:20-17:00", subject: "Футбол / Хорография" },
+          ],
+          "7A": [
+            { num: 1, time: "09:00-09:40", subject: "Час будущего" },
+            { num: 2, time: "9:50-10:30", subject: "География" },
+            { num: 3, time: "10:45-11:25", subject: "Узбекский язык" },
+            { num: 4, time: "11:35-12:15", subject: "Биология" },
+            { num: 5, time: "12:25-13:05", subject: "Физика" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Математика" },
+            { num: 7, time: "14:35-15:15", subject: "Русский язык" },
+            { num: 8, time: "15:30-16:10", subject: "Технология" },
+            { num: 9, time: "16:20-17:00", subject: "Футбол / Хорография" },
+          ],
+          "8A": [
+            { num: 1, time: "09:00-09:40", subject: "География" },
+            { num: 2, time: "9:50-10:30", subject: "Алгебра" },
+            { num: 3, time: "10:45-11:25", subject: "Биология" },
+            { num: 4, time: "11:35-12:15", subject: "География/ Экономика" },
+            { num: 5, time: "12:25-13:05", subject: "Русский язык" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Черчение" },
+            { num: 7, time: "14:35-15:15", subject: "Узбекский язык" },
+            { num: 8, time: "15:30-16:10", subject: "Физкультура" },
+            { num: 9, time: "16:20-17:00", subject: "Футбол / Хорография" },
+          ],
+          "8Б": [
+            { num: 1, time: "09:00-09:40", subject: "O'zbekiston tarixi" },
+            { num: 2, time: "9:50-10:30", subject: "Ona tili" },
+            { num: 3, time: "10:45-11:25", subject: "Fizika" },
+            { num: 4, time: "11:35-12:15", subject: "Algebra" },
+            { num: 5, time: "12:25-13:05", subject: "Jahon tarixi" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Iqtisod/ Geografiya" },
+            { num: 7, time: "14:35-15:15", subject: "Ingliz tili" },
+            { num: 8, time: "15:30-16:10", subject: "Huquq" },
+            { num: 9, time: "16:20-17:00", subject: "Футбол / Хорография" },
+          ],
+          "9A": [
+            { num: 1, time: "09:00-09:40", subject: "Узбекский язык" },
+            { num: 2, time: "9:50-10:30", subject: "История Узбекистана" },
+            { num: 3, time: "10:45-11:25", subject: "География" },
+            { num: 4, time: "11:35-12:15", subject: "Английский язык" },
+            { num: 5, time: "12:25-13:05", subject: "Черчение" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Всемирная история" },
+            { num: 7, time: "14:35-15:15", subject: "Алгебра" },
+            { num: 8, time: "15:30-16:10", subject: "Литература" },
+            { num: 9, time: "16:20-17:00", subject: "Футбол / Хорография" },
+          ],
+          "10А": [
+            { num: 1, time: "09:00-09:40", subject: "Алгебра" },
+            { num: 2, time: "9:50-10:30", subject: "IELTS" },
+            { num: 3, time: "10:45-11:25", subject: "Право" },
+            { num: 4, time: "11:35-12:15", subject: "История Узбекистана" },
+            { num: 5, time: "12:25-13:05", subject: "География" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "НДВП" },
+            { num: 7, time: "14:35-15:15", subject: "Английский язык" },
+            { num: 8, time: "15:30-16:10", subject: "Узбекский язык" },
+            { num: 9, time: "16:20-17:00", subject: "Индивидуальная работа" },
+          ],
+        },
+        tue: {
+          "1A": [
+            { num: 1, time: "09:00-09:40", subject: "Индивидуалная работа" },
+            { num: 2, time: "9:50-10:30", subject: "Английский язык" },
+            { num: 3, time: "10:45-11:25", subject: "Технология" },
+            { num: 4, time: "11:35-12:15", subject: "Письмо" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Шахматный кружок" },
+            { num: 7, time: "14:35-15:15", subject: "Математика" },
+            { num: 8, time: "15:30-16:10", subject: "Внеклассное чтение" },
+            {
+              num: 9,
+              time: "16:20-17:00",
+              subject: "Выполнение домашнего задания",
+            },
+          ],
+          "1В": [
+            { num: 1, time: "09:00-09:40", subject: "Математика" },
+            { num: 2, time: "9:50-10:30", subject: "Письмо" },
+            { num: 3, time: "10:45-11:25", subject: "Английский язык" },
+            { num: 4, time: "11:35-12:15", subject: "Внеклассное чтение" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Шахматный кружок" },
+            { num: 7, time: "14:35-15:15", subject: "Информатика" },
+            { num: 8, time: "15:30-16:10", subject: "Естествознание" },
+            {
+              num: 9,
+              time: "16:20-17:00",
+              subject: "Выполнение домашнего задания",
+            },
+          ],
+          "1Б": [
+            { num: 1, time: "09:00-09:40", subject: "Matematika" },
+            { num: 2, time: "9:50-10:30", subject: "Tasviriy san'at" },
+            { num: 3, time: "10:45-11:25", subject: "Yozuv" },
+            { num: 4, time: "11:35-12:15", subject: "Alifbe" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Естествознание" },
+            { num: 7, time: "14:35-15:15", subject: "Шахматный кружок" },
+            { num: 8, time: "15:30-16:10", subject: "Ingliz tili" },
+            { num: 9, time: "16:20-17:00", subject: "Uy vazifasini bajarish" },
+          ],
+          "2A": [
+            { num: 1, time: "09:00-09:40", subject: "Английский язык" },
+            { num: 2, time: "9:50-10:30", subject: "Узбекский язык" },
+            { num: 3, time: "10:45-11:25", subject: "Математика" },
+            { num: 4, time: "11:35-12:15", subject: "Русский язык" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Китайский язык" },
+            { num: 7, time: "14:35-15:15", subject: "Воспитание" },
+            {
+              num: 8,
+              time: "15:30-16:10",
+              subject: "Выполнение домашнего задания",
+            },
+            {
+              num: 9,
+              time: "16:20-17:00",
+              subject: "Выполнение домашнего задания",
+            },
+          ],
+          "2Б": [
+            { num: 1, time: "09:00-09:40", subject: "Ingliz tili" },
+            { num: 2, time: "9:50-10:30", subject: "Jismoniy tarbiya" },
+            { num: 3, time: "10:45-11:25", subject: "Tasviriy san'at" },
+            { num: 4, time: "11:35-12:15", subject: "Matematika" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "O'qish savodxonligi" },
+            { num: 7, time: "14:35-15:15", subject: "Естествознание" },
+            {
+              num: 8,
+              time: "15:30-16:10",
+              subject: "Выполнение домашнего задания",
+            },
+            {
+              num: 9,
+              time: "16:20-17:00",
+              subject: "Выполнение домашнего задания",
+            },
+          ],
+          "3A": [
+            { num: 1, time: "09:00-09:40", subject: "Технология" },
+            { num: 2, time: "9:50-10:30", subject: "Математика" },
+            { num: 3, time: "10:45-11:25", subject: "Узбекский язык" },
+            { num: 4, time: "11:35-12:15", subject: "Шахматный кружок" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "ИЗО" },
+            { num: 7, time: "14:35-15:15", subject: "Китайский язык" },
+            {
+              num: 8,
+              time: "15:30-16:10",
+              subject: "Выполнение домашнего задания",
+            },
+            { num: 9, time: "16:20-17:00", subject: "Английский язык" },
+          ],
+          "4A": [
+            { num: 1, time: "09:00-09:40", subject: "Математика" },
+            { num: 2, time: "9:50-10:30", subject: "Русский язык" },
+            { num: 3, time: "10:45-11:25", subject: "Английский язык" },
+            { num: 4, time: "11:35-12:15", subject: "Шахматный кружок" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Чтения" },
+            { num: 7, time: "14:35-15:15", subject: "Естествознание" },
+            {
+              num: 8,
+              time: "15:30-16:10",
+              subject: "Выполнение домашнего задания",
+            },
+            { num: 9, time: "16:20-17:00", subject: "ИЗО" },
+          ],
+          "5A": [
+            { num: 1, time: "09:00-09:40", subject: "Математика" },
+            { num: 2, time: "9:50-10:30", subject: "Sceince" },
+            { num: 3, time: "10:45-11:25", subject: "История" },
+            { num: 4, time: "11:35-12:15", subject: "Литература" },
+            { num: 5, time: "12:25-13:05", subject: "Физкультура" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Узбекский язык" },
+            { num: 7, time: "14:35-15:15", subject: "Английский язык" },
+            { num: 8, time: "15:30-16:10", subject: "Таэквандо/ Юная Леди" },
+            {
+              num: 9,
+              time: "16:20-17:00",
+              subject: "Выполнение домашнего задания",
+            },
+          ],
+          "5Б": [
+            { num: 1, time: "09:00-09:40", subject: "Rus tili" },
+            { num: 2, time: "9:50-10:30", subject: "Tarbiya" },
+            { num: 3, time: "10:45-11:25", subject: "Adabiyot" },
+            { num: 4, time: "11:35-12:15", subject: "Ona tili" },
+            { num: 5, time: "12:25-13:05", subject: "Matematika" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Ingliz tili" },
+            { num: 7, time: "14:35-15:15", subject: "Matematikadan to'garak" },
+            { num: 8, time: "15:30-16:10", subject: "Таэквандо/ Юная Леди" },
+            { num: 9, time: "16:20-17:00", subject: "Uy vazifasini bajarish" },
+          ],
+          "6A": [
+            { num: 1, time: "09:00-09:40", subject: "Sceince" },
+            { num: 2, time: "9:50-10:30", subject: "Английский язык" },
+            { num: 3, time: "10:45-11:25", subject: "Физкультура" },
+            { num: 4, time: "11:35-12:15", subject: "Математика" },
+            { num: 5, time: "12:25-13:05", subject: "Узбекский язык" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Литература" },
+            { num: 7, time: "14:35-15:15", subject: "ИЗО" },
+            { num: 8, time: "15:30-16:10", subject: "Таэквандо/ Юная Леди" },
+            {
+              num: 9,
+              time: "16:20-17:00",
+              subject: "Выполнение домашнего задания",
+            },
+          ],
+          "6Б": [
+            { num: 1, time: "09:00-09:40", subject: "Ingliz tili" },
+            { num: 2, time: "9:50-10:30", subject: "Matematika" },
+            { num: 3, time: "10:45-11:25", subject: "Rus tili" },
+            { num: 4, time: "11:35-12:15", subject: "Xitoy tili" },
+            { num: 5, time: "12:25-13:05", subject: "Tasviriy san'at" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Ona tili" },
+            { num: 7, time: "14:35-15:15", subject: "Tarbiya" },
+            { num: 8, time: "15:30-16:10", subject: "Таэквандо/ Юная Леди" },
+            { num: 9, time: "16:20-17:00", subject: "Uy vazifasini bajarish" },
+          ],
+          "7A": [
+            { num: 1, time: "09:00-09:40", subject: "ИЗО" },
+            { num: 2, time: "9:50-10:30", subject: "История Узбекистана" },
+            { num: 3, time: "10:45-11:25", subject: "Китайский язык" },
+            { num: 4, time: "11:35-12:15", subject: "Английский язык" },
+            { num: 5, time: "12:25-13:05", subject: "Химия" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Математика" },
+            { num: 7, time: "14:35-15:15", subject: "Таэквандо/ Юная Леди" },
+            { num: 8, time: "15:30-16:10", subject: "Узбекский язык" },
+            { num: 9, time: "16:20-17:00", subject: "Литература" },
+          ],
+          "8A": [
+            { num: 1, time: "09:00-09:40", subject: "Узбекский язык" },
+            { num: 2, time: "9:50-10:30", subject: "Технология" },
+            { num: 3, time: "10:45-11:25", subject: "Геометрия" },
+            { num: 4, time: "11:35-12:15", subject: "Химия" },
+            { num: 5, time: "12:25-13:05", subject: "Китайский язык" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "IT" },
+            { num: 7, time: "14:35-15:15", subject: "Таэквандо/ Юная Леди" },
+            { num: 8, time: "15:30-16:10", subject: "Литература" },
+            { num: 9, time: "16:20-17:00", subject: "Физкультура" },
+          ],
+          "8Б": [
+            { num: 1, time: "09:00-09:40", subject: "Adabiyot" },
+            { num: 2, time: "9:50-10:30", subject: "Geometriya" },
+            { num: 3, time: "10:45-11:25", subject: "Kimyo" },
+            { num: 4, time: "11:35-12:15", subject: "Biologiya" },
+            { num: 5, time: "12:25-13:05", subject: "Ingliz tili" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Kelajak soati" },
+            { num: 7, time: "14:35-15:15", subject: "Таэквандо/ Юная Леди" },
+            { num: 8, time: "15:30-16:10", subject: "Informatika" },
+            { num: 9, time: "16:20-17:00", subject: "IT" },
+          ],
+          "9A": [
+            { num: 1, time: "09:00-09:40", subject: "Физика" },
+            { num: 2, time: "9:50-10:30", subject: "Химия" },
+            { num: 3, time: "10:45-11:25", subject: "Биология" },
+            { num: 4, time: "11:35-12:15", subject: "Узбекский язык" },
+            { num: 5, time: "12:25-13:05", subject: "IT" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Геометрия" },
+            { num: 7, time: "14:35-15:15", subject: "Таэквандо/ Юная Леди" },
+            { num: 8, time: "15:30-16:10", subject: "IELTS" },
+            { num: 9, time: "16:20-17:00", subject: "Английский язык" },
+          ],
+          "10А": [
+            { num: 1, time: "09:00-09:40", subject: "Химия" },
+            { num: 2, time: "9:50-10:30", subject: "Китайский язык" },
+            { num: 3, time: "10:45-11:25", subject: "Английский язык" },
+            { num: 4, time: "11:35-12:15", subject: "Физика" },
+            { num: 5, time: "12:25-13:05", subject: "Геометрия" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Физкультура" },
+            { num: 7, time: "14:35-15:15", subject: "Узбекский язык" },
+            { num: 8, time: "15:30-16:10", subject: "IT" },
+            { num: 9, time: "16:20-17:00", subject: "Узбекский язык" },
+          ],
+        },
+        wed: {
+          "1A": [
+            { num: 1, time: "09:00-09:40", subject: "Английский язык" },
+            { num: 2, time: "9:50-10:30", subject: "Час будущего" },
+            { num: 3, time: "10:45-11:25", subject: "Букварь" },
+            { num: 4, time: "11:35-12:15", subject: "Математика" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Музыка" },
+            { num: 7, time: "14:35-15:15", subject: "Каратэ/ гимнастика" },
+            { num: 8, time: "15:30-16:10", subject: "Физкультура" },
+            {
+              num: 9,
+              time: "16:20-17:00",
+              subject: "Выполнение домашнего задания",
+            },
+          ],
+          "1В": [
+            { num: 1, time: "09:00-09:40", subject: "Математика" },
+            {
+              num: 2,
+              time: "9:50-10:30",
+              subject: "Выполнение домашнего задания",
+            },
+            { num: 3, time: "10:45-11:25", subject: "Букварь" },
+            { num: 4, time: "11:35-12:15", subject: "Английский язык" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Письмо" },
+            { num: 7, time: "14:35-15:15", subject: "Каратэ/ гимнастика" },
+            { num: 8, time: "15:30-16:10", subject: "Музыка" },
+            { num: 9, time: "16:20-17:00", subject: "Физкультура" },
+          ],
+          "1Б": [
+            { num: 1, time: "09:00-09:40", subject: "Matematika" },
+            { num: 2, time: "9:50-10:30", subject: "Musiqa" },
+            { num: 3, time: "10:45-11:25", subject: "Ingliz tili" },
+            { num: 4, time: "11:35-12:15", subject: "Jismoniy tarbiya" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Sinfdan tashqari o'qish" },
+            { num: 7, time: "14:35-15:15", subject: "Каратэ/ гимнастика" },
+            { num: 8, time: "15:30-16:10", subject: "Individual ishlash" },
+            { num: 9, time: "16:20-17:00", subject: "Uy vazifasini bajarish" },
+          ],
+          "2A": [
+            { num: 1, time: "09:00-09:40", subject: "Русский язык" },
+            { num: 2, time: "9:50-10:30", subject: "Математика" },
+            { num: 3, time: "10:45-11:25", subject: "Узбекский язык" },
+            { num: 4, time: "11:35-12:15", subject: "Естествознание" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Английский язык" },
+            { num: 7, time: "14:35-15:15", subject: "Каратэ/ гимнастика" },
+            { num: 8, time: "15:30-16:10", subject: "Чтения" },
+            {
+              num: 9,
+              time: "16:20-17:00",
+              subject: "Выполнение домашнего задания",
+            },
+          ],
+          "2Б": [
+            { num: 1, time: "09:00-09:40", subject: "Musiqa" },
+            { num: 2, time: "9:50-10:30", subject: "Ona tili" },
+            { num: 3, time: "10:45-11:25", subject: "Matematika" },
+            { num: 4, time: "11:35-12:15", subject: "Ingliz tili" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Xitoy tili" },
+            { num: 7, time: "14:35-15:15", subject: "Каратэ/ гимнастика" },
+            { num: 8, time: "15:30-16:10", subject: "O'qish savodxonligi" },
+            { num: 9, time: "16:20-17:00", subject: "Uy vazifasini bajarish" },
+          ],
+          "3A": [
+            { num: 1, time: "09:00-09:40", subject: "Английский язык" },
+            { num: 2, time: "9:50-10:30", subject: "Узбекский язык" },
+            { num: 3, time: "10:45-11:25", subject: "Русский язык" },
+            { num: 4, time: "11:35-12:15", subject: "Чтения" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Математика" },
+            { num: 7, time: "14:35-15:15", subject: "Sceince" },
+            { num: 8, time: "15:30-16:10", subject: "Каратэ/ гимнастика" },
+            {
+              num: 9,
+              time: "16:20-17:00",
+              subject: "Выполнение домашнего задания",
+            },
+          ],
+          "4A": [
+            { num: 1, time: "09:00-09:40", subject: "Узбекский язык" },
+            { num: 2, time: "9:50-10:30", subject: "Математика" },
+            { num: 3, time: "10:45-11:25", subject: "Музыка" },
+            { num: 4, time: "11:35-12:15", subject: "Информатика" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Воспитание" },
+            { num: 7, time: "14:35-15:15", subject: "Чтения" },
+            { num: 8, time: "15:30-16:10", subject: "Каратэ/ гимнастика" },
+            { num: 9, time: "16:20-17:00", subject: "Китайский язык" },
+          ],
+          "5A": [
+            { num: 1, time: "09:00-09:40", subject: "Русский язык" },
+            { num: 2, time: "9:50-10:30", subject: "Информатика" },
+            { num: 3, time: "10:45-11:25", subject: "Английский язык" },
+            { num: 4, time: "11:35-12:15", subject: "Китайский язык" },
+            { num: 5, time: "12:25-13:05", subject: "Узбекский язык" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Технология" },
+            { num: 7, time: "14:35-15:15", subject: "Английский язык" },
+            { num: 8, time: "15:30-16:10", subject: "Каратэ/ гимнастика" },
+            {
+              num: 9,
+              time: "16:20-17:00",
+              subject: "Выполнение домашнего задания",
+            },
+          ],
+          "5Б": [
+            { num: 1, time: "09:00-09:40", subject: "Tarix" },
+            { num: 2, time: "9:50-10:30", subject: "Ingliz tili" },
+            { num: 3, time: "10:45-11:25", subject: "Informatika" },
+            { num: 4, time: "11:35-12:15", subject: "Ona tili" },
+            { num: 5, time: "12:25-13:05", subject: "Matematika" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Jismoniy tarbiya" },
+            { num: 7, time: "14:35-15:15", subject: "Texnologiya" },
+            { num: 8, time: "15:30-16:10", subject: "Каратэ/ гимнастика" },
+            { num: 9, time: "16:20-17:00", subject: "Uy vazifasini bajarish" },
+          ],
+          "6A": [
+            { num: 1, time: "09:00-09:40", subject: "Математика" },
+            { num: 2, time: "9:50-10:30", subject: "Китайский язык" },
+            { num: 3, time: "10:45-11:25", subject: "История" },
+            { num: 4, time: "11:35-12:15", subject: "Русский язык" },
+            { num: 5, time: "12:25-13:05", subject: "Английский язык" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Узбекский язык" },
+            {
+              num: 7,
+              time: "14:35-15:15",
+              subject: "Выполнение домашние задание",
+            },
+            { num: 8, time: "15:30-16:10", subject: "Воспитание" },
+            { num: 9, time: "16:20-17:00", subject: "Футбол / Хорография" },
+          ],
+          "6Б": [
+            { num: 1, time: "09:00-09:40", subject: "Sceince" },
+            { num: 2, time: "9:50-10:30", subject: "Ingliz tili" },
+            { num: 3, time: "10:45-11:25", subject: "Jismoniy tarbiya" },
+            { num: 4, time: "11:35-12:15", subject: "Matematika" },
+            { num: 5, time: "12:25-13:05", subject: "Musiqa" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Adabiyot" },
+            { num: 7, time: "14:35-15:15", subject: "Matematikadan to'garak" },
+            { num: 8, time: "15:30-16:10", subject: "Uy vazifasini bajarish" },
+            { num: 9, time: "16:20-17:00", subject: "Футбол / Хорография" },
+          ],
+          "7A": [
+            { num: 1, time: "09:00-09:40", subject: "Английский язык" },
+            { num: 2, time: "9:50-10:30", subject: "Физика" },
+            { num: 3, time: "10:45-11:25", subject: "Математика" },
+            { num: 4, time: "11:35-12:15", subject: "Музыка" },
+            { num: 5, time: "12:25-13:05", subject: "География" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Русский язык" },
+            { num: 7, time: "14:35-15:15", subject: "Физкультура" },
+            { num: 8, time: "15:30-16:10", subject: "Узбекский язык" },
+            { num: 9, time: "16:20-17:00", subject: "Футбол / Хорография" },
+          ],
+          "8A": [
+            { num: 1, time: "09:00-09:40", subject: "Алгебра" },
+            { num: 2, time: "9:50-10:30", subject: "История Узбекистана" },
+            { num: 3, time: "10:45-11:25", subject: "Английский язык" },
+            { num: 4, time: "11:35-12:15", subject: "Биология" },
+            { num: 5, time: "12:25-13:05", subject: "Информатика" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Право" },
+            { num: 7, time: "14:35-15:15", subject: "Узбекский язык" },
+            { num: 8, time: "15:30-16:10", subject: "Китайский язык" },
+            { num: 9, time: "16:20-17:00", subject: "Футбол / Хорография" },
+          ],
+          "8Б": [
+            { num: 1, time: "09:00-09:40", subject: "O'zbekiston tarixi" },
+            { num: 2, time: "9:50-10:30", subject: "Geografiya" },
+            { num: 3, time: "10:45-11:25", subject: "Tarbiya" },
+            { num: 4, time: "11:35-12:15", subject: "Ingliz tili" },
+            { num: 5, time: "12:25-13:05", subject: "Ona tili" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Algebra" },
+            { num: 7, time: "14:35-15:15", subject: "Xitoy tili" },
+            { num: 8, time: "15:30-16:10", subject: "Uy vazifasini bajarish" },
+            { num: 9, time: "16:20-17:00", subject: "Texnologiya" },
+          ],
+          "9A": [
+            { num: 1, time: "09:00-09:40", subject: "Английский язык" },
+            { num: 2, time: "9:50-10:30", subject: "Физкультура" },
+            { num: 3, time: "10:45-11:25", subject: "История Узбекистана" },
+            { num: 4, time: "11:35-12:15", subject: "Право" },
+            { num: 5, time: "12:25-13:05", subject: "Алгебра" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Экономика / География" },
+            { num: 7, time: "14:35-15:15", subject: "Русский язык" },
+            { num: 8, time: "15:30-16:10", subject: "Технология" },
+            { num: 9, time: "16:20-17:00", subject: "Узбекский язык" },
+          ],
+          "10А": [
+            { num: 1, time: "09:00-09:40", subject: "Информатика" },
+            { num: 2, time: "9:50-10:30", subject: "Всемирная история" },
+            { num: 3, time: "10:45-11:25", subject: "Алгебра" },
+            { num: 4, time: "11:35-12:15", subject: "География" },
+            { num: 5, time: "12:25-13:05", subject: "Литература" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "НДВП" },
+            { num: 7, time: "14:35-15:15", subject: "Английский язык" },
+            { num: 8, time: "15:30-16:10", subject: "Индивидуальная работа" },
+            { num: 9, time: "16:20-17:00", subject: "Воспитание" },
+          ],
+        },
+        thu: {
+          "1A": [
+            { num: 1, time: "09:00-09:40", subject: "Букварь" },
+            { num: 2, time: "9:50-10:30", subject: "Математика" },
+            { num: 3, time: "10:45-11:25", subject: "Английский язык" },
+            { num: 4, time: "11:35-12:15", subject: "Письмо" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Шахматный кружок" },
+            { num: 7, time: "14:35-15:15", subject: "Рисование" },
+            { num: 8, time: "15:30-16:10", subject: "Воспитание" },
+            {
+              num: 9,
+              time: "16:20-17:00",
+              subject: "Выполнение домашнего задания",
+            },
+          ],
+          "1В": [
+            { num: 1, time: "09:00-09:40", subject: "Математика" },
+            { num: 2, time: "9:50-10:30", subject: "Букварь" },
+            { num: 3, time: "10:45-11:25", subject: "Письмо" },
+            { num: 4, time: "11:35-12:15", subject: "Воспитание" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Шахматный кружок" },
+            { num: 7, time: "14:35-15:15", subject: "Английский язык" },
+            { num: 8, time: "15:30-16:10", subject: "Индивидуальная работа" },
+            {
+              num: 9,
+              time: "16:20-17:00",
+              subject: "Выполнение домашнего задания",
+            },
+          ],
+          "1Б": [
+            { num: 1, time: "09:00-09:40", subject: "Alifbe" },
+            { num: 2, time: "9:50-10:30", subject: "Matematika" },
+            { num: 3, time: "10:45-11:25", subject: "Yozuv" },
+            { num: 4, time: "11:35-12:15", subject: "Ingliz tili" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Tarbiya" },
+            { num: 7, time: "14:35-15:15", subject: "Информатика" },
+            { num: 8, time: "15:30-16:10", subject: "Atrofimizdagi olam" },
+            { num: 9, time: "16:20-17:00", subject: "Uy vazifasini bajarish" },
+          ],
+          "2A": [
+            { num: 1, time: "09:00-09:40", subject: "Чтения" },
+            { num: 2, time: "9:50-10:30", subject: "Музыка" },
+            { num: 3, time: "10:45-11:25", subject: "Математика" },
+            { num: 4, time: "11:35-12:15", subject: "Шахматный кружок" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Английский язык" },
+            { num: 7, time: "14:35-15:15", subject: "Русский язык" },
+            { num: 8, time: "15:30-16:10", subject: "Физкультура" },
+            {
+              num: 9,
+              time: "16:20-17:00",
+              subject: "Выполнение домашнего задания",
+            },
+          ],
+          "2Б": [
+            { num: 1, time: "09:00-09:40", subject: "Ingliz tili" },
+            { num: 2, time: "9:50-10:30", subject: "Informatika" },
+            { num: 3, time: "10:45-11:25", subject: "Matematika" },
+            { num: 4, time: "11:35-12:15", subject: "Шахматный кружок" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "O'qish savodxonligi" },
+            { num: 7, time: "14:35-15:15", subject: "Rus tili" },
+            { num: 8, time: "15:30-16:10", subject: "Ona tili" },
+            { num: 9, time: "16:20-17:00", subject: "Uy vazifasini bajarish" },
+          ],
+          "3A": [
+            { num: 1, time: "09:00-09:40", subject: "Музыка" },
+            { num: 2, time: "9:50-10:30", subject: "Шахматный кружок" },
+            { num: 3, time: "10:45-11:25", subject: "Математика" },
+            { num: 4, time: "11:35-12:15", subject: "Чтения" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Русский язык" },
+            { num: 7, time: "14:35-15:15", subject: "Английский язык" },
+            {
+              num: 8,
+              time: "15:30-16:10",
+              subject: "Выполнение домашнего задания",
+            },
+            { num: 9, time: "16:20-17:00", subject: "Физкультура" },
+          ],
+          "4A": [
+            { num: 1, time: "09:00-09:40", subject: "Математика" },
+            { num: 2, time: "9:50-10:30", subject: "Шахматный кружок" },
+            { num: 3, time: "10:45-11:25", subject: "Физкультура" },
+            { num: 4, time: "11:35-12:15", subject: "Английский язык" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Английский язык" },
+            { num: 7, time: "14:35-15:15", subject: "Русский язык" },
+            {
+              num: 8,
+              time: "15:30-16:10",
+              subject: "Выполнение домашнего задания",
+            },
+            { num: 9, time: "16:20-17:00", subject: "Технология" },
+          ],
+          "5A": [
+            { num: 1, time: "09:00-09:40", subject: "Математика" },
+            { num: 2, time: "9:50-10:30", subject: "История" },
+            { num: 3, time: "10:45-11:25", subject: "Музыка" },
+            { num: 4, time: "11:35-12:15", subject: "Sceince" },
+            { num: 5, time: "12:25-13:05", subject: "Литература" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Китайский язык" },
+            { num: 7, time: "14:35-15:15", subject: "Таэквандо/ Юная Леди" },
+            { num: 8, time: "15:30-16:10", subject: "Английский язык" },
+            {
+              num: 9,
+              time: "16:20-17:00",
+              subject: "Выполнение домашнего задания",
+            },
+          ],
+          "5Б": [
+            { num: 1, time: "09:00-09:40", subject: "Sceince" },
+            { num: 2, time: "9:50-10:30", subject: "Matematika" },
+            { num: 3, time: "10:45-11:25", subject: "Xitoy tili" },
+            { num: 4, time: "11:35-12:15", subject: "Ona tili" },
+            { num: 5, time: "12:25-13:05", subject: "Ingliz tili" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Individual ishlash" },
+            { num: 7, time: "14:35-15:15", subject: "Таэквандо/ Юная Леди" },
+            { num: 8, time: "15:30-16:10", subject: "Musiqa" },
+            { num: 9, time: "16:20-17:00", subject: "Uy vazifasini bajarish" },
+          ],
+          "6A": [
+            { num: 1, time: "09:00-09:40", subject: "Английский язык" },
+            { num: 2, time: "9:50-10:30", subject: "Sceince" },
+            { num: 3, time: "10:45-11:25", subject: "Математика" },
+            { num: 4, time: "11:35-12:15", subject: "Китайский язык" },
+            { num: 5, time: "12:25-13:05", subject: "Литература" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Музыка" },
+            { num: 7, time: "14:35-15:15", subject: "Таэквандо/ Юная Леди" },
+            { num: 8, time: "15:30-16:10", subject: "Математический кружок" },
+            {
+              num: 9,
+              time: "16:20-17:00",
+              subject: "Выполнение домашнего задания",
+            },
+          ],
+          "6Б": [
+            { num: 1, time: "09:00-09:40", subject: "Ona tili" },
+            { num: 2, time: "9:50-10:30", subject: "Ingliz tili" },
+            { num: 3, time: "10:45-11:25", subject: "Adabiyot" },
+            { num: 4, time: "11:35-12:15", subject: "Sceince" },
+            { num: 5, time: "12:25-13:05", subject: "Xitoy tili" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Таэквандо/ Юная Леди" },
+            { num: 7, time: "14:35-15:15", subject: "Matematika" },
+            { num: 8, time: "15:30-16:10", subject: "Matematikadan to'garak" },
+            { num: 9, time: "16:20-17:00", subject: "Uy vazifasini bajarish" },
+          ],
+          "7A": [
+            { num: 1, time: "09:00-09:40", subject: "Всемирная история" },
+            { num: 2, time: "9:50-10:30", subject: "Китайский язык" },
+            { num: 3, time: "10:45-11:25", subject: "Литература" },
+            { num: 4, time: "11:35-12:15", subject: "Химия" },
+            { num: 5, time: "12:25-13:05", subject: "Английский язык" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Математика" },
+            { num: 7, time: "14:35-15:15", subject: "Английский язык" },
+            { num: 8, time: "15:30-16:10", subject: "Таэквандо/ Юная Леди" },
+            {
+              num: 9,
+              time: "16:20-17:00",
+              subject: "Выполнение домашнего задания",
+            },
+          ],
+          "8A": [
+            { num: 1, time: "09:00-09:40", subject: "Геометрия" },
+            { num: 2, time: "9:50-10:30", subject: "Физика" },
+            { num: 3, time: "10:45-11:25", subject: "Всемирная история" },
+            { num: 4, time: "11:35-12:15", subject: "Английский язык" },
+            { num: 5, time: "12:25-13:05", subject: "Химия" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Русский язык" },
+            { num: 7, time: "14:35-15:15", subject: "Физика" },
+            { num: 8, time: "15:30-16:10", subject: "Таэквандо/ Юная Леди" },
+            {
+              num: 9,
+              time: "16:20-17:00",
+              subject: "Выполнение домашнего задания",
+            },
+          ],
+          "8Б": [
+            { num: 1, time: "09:00-09:40", subject: "Kimyo" },
+            { num: 2, time: "9:50-10:30", subject: "Ona tili" },
+            { num: 3, time: "10:45-11:25", subject: "Ingliz tili" },
+            { num: 4, time: "11:35-12:15", subject: "Geometriya" },
+            { num: 5, time: "12:25-13:05", subject: "Adabiyot" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Informatika" },
+            { num: 7, time: "14:35-15:15", subject: "Rus tili" },
+            { num: 8, time: "15:30-16:10", subject: "Таэквандо/ Юная Леди" },
+            {
+              num: 9,
+              time: "16:20-17:00",
+              subject: "Выполнение домашнего задания",
+            },
+          ],
+          "9A": [
+            { num: 1, time: "09:00-09:40", subject: "Физкультура" },
+            { num: 2, time: "9:50-10:30", subject: "Литература" },
+            { num: 3, time: "10:45-11:25", subject: "Химия" },
+            { num: 4, time: "11:35-12:15", subject: "Информатика" },
+            { num: 5, time: "12:25-13:05", subject: "Физика" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Геометрия" },
+            { num: 7, time: "14:35-15:15", subject: "Английский язык" },
+            { num: 8, time: "15:30-16:10", subject: "Таэквандо/ Юная Леди" },
+            { num: 9, time: "16:20-17:00", subject: "Китайский язык" },
+          ],
+          "10А": [
+            { num: 1, time: "09:00-09:40", subject: "Русский язык" },
+            { num: 2, time: "9:50-10:30", subject: "Химия" },
+            { num: 3, time: "10:45-11:25", subject: "Геометрия" },
+            { num: 4, time: "11:35-12:15", subject: "Биология" },
+            { num: 5, time: "12:25-13:05", subject: "Физкультура" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Английский язык" },
+            { num: 7, time: "14:35-15:15", subject: "Китайский язык" },
+            { num: 8, time: "15:30-16:10", subject: "IELTS" },
+            { num: 9, time: "16:20-17:00", subject: "Индивидуальная работа" },
+          ],
+        },
+        fri: {
+          "1A": [
+            { num: 1, time: "09:00-09:40", subject: "Английский язык" },
+            { num: 2, time: "9:50-10:30", subject: "Письмо" },
+            { num: 3, time: "10:45-11:25", subject: "Букварь" },
+            { num: 4, time: "11:35-12:15", subject: "Математика" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Робототехника" },
+            {
+              num: 7,
+              time: "14:35-15:15",
+              subject: "Кружок английского языка",
+            },
+            { num: 8, time: "15:30-16:10", subject: "Индивидуальная работа" },
+            {
+              num: 9,
+              time: "16:20-17:00",
+              subject: "Выполнение домашнего задания",
+            },
+          ],
+          "1В": [
+            { num: 1, time: "09:00-09:40", subject: "Математика" },
+            { num: 2, time: "9:50-10:30", subject: "Английский язык" },
+            { num: 3, time: "10:45-11:25", subject: "Письмо" },
+            { num: 4, time: "11:35-12:15", subject: "Букварь" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Робототехника" },
+            {
+              num: 7,
+              time: "14:35-15:15",
+              subject: "Кружок английского языка",
+            },
+            { num: 8, time: "15:30-16:10", subject: "Индивидуальная работа" },
+            {
+              num: 9,
+              time: "16:20-17:00",
+              subject: "Выполнение домашнего задания",
+            },
+          ],
+          "1Б": [
+            { num: 1, time: "09:00-09:40", subject: "Yozuv" },
+            { num: 2, time: "9:50-10:30", subject: "Texnologiya" },
+            { num: 3, time: "10:45-11:25", subject: "Ingliz tili" },
+            { num: 4, time: "11:35-12:15", subject: "Matematika" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Alifbe" },
+            { num: 7, time: "14:35-15:15", subject: "Individual ishlash" },
+            { num: 8, time: "15:30-16:10", subject: "Robototexnika" },
+            { num: 9, time: "16:20-17:00", subject: "Uy vazifasini bajarish" },
+          ],
+          "2A": [
+            { num: 1, time: "09:00-09:40", subject: "Информатика" },
+            { num: 2, time: "9:50-10:30", subject: "Русский язык" },
+            { num: 3, time: "10:45-11:25", subject: "Робототехника" },
+            { num: 4, time: "11:35-12:15", subject: "Английский язык" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Математика" },
+            { num: 7, time: "14:35-15:15", subject: "Час будущего" },
+            { num: 8, time: "15:30-16:10", subject: "Чтения" },
+            {
+              num: 9,
+              time: "16:20-17:00",
+              subject: "Выполнение домашнего задания",
+            },
+          ],
+          "2Б": [
+            { num: 1, time: "09:00-09:40", subject: "Matematika" },
+            { num: 2, time: "9:50-10:30", subject: "Ingliz tili" },
+            { num: 3, time: "10:45-11:25", subject: "Робототехника" },
+            { num: 4, time: "11:35-12:15", subject: "Rus tili" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Texnologiya" },
+            { num: 7, time: "14:35-15:15", subject: "O'qish savodxonligi" },
+            { num: 8, time: "15:30-16:10", subject: "Ona tili" },
+            { num: 9, time: "16:20-17:00", subject: "Uy vazifasini bajarish" },
+          ],
+          "3A": [
+            { num: 1, time: "09:00-09:40", subject: "Математика" },
+            { num: 2, time: "9:50-10:30", subject: "Робототехника" },
+            { num: 3, time: "10:45-11:25", subject: "Чтения" },
+            { num: 4, time: "11:35-12:15", subject: "Английский язык" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Русский язык" },
+            { num: 7, time: "14:35-15:15", subject: "Индивидуальная работа" },
+            { num: 8, time: "15:30-16:10", subject: "Воспитание" },
+            {
+              num: 9,
+              time: "16:20-17:00",
+              subject: "Выполнение домашнего задания",
+            },
+          ],
+          "4A": [
+            { num: 1, time: "09:00-09:40", subject: "Математика" },
+            { num: 2, time: "9:50-10:30", subject: "Чтения" },
+            { num: 3, time: "10:45-11:25", subject: "Английский язык" },
+            { num: 4, time: "11:35-12:15", subject: "Русский язык" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Внеклассное чтение" },
+            { num: 7, time: "14:35-15:15", subject: "Индивидуальная работа" },
+            {
+              num: 8,
+              time: "15:30-16:10",
+              subject: "Выполнение домашнего задания",
+            },
+            { num: 9, time: "16:20-17:00", subject: "Робототехника" },
+          ],
+          "5A": [
+            { num: 1, time: "09:00-09:40", subject: "Робототехника" },
+            { num: 2, time: "9:50-10:30", subject: "Физкультура" },
+            { num: 3, time: "10:45-11:25", subject: "Математика" },
+            { num: 4, time: "11:35-12:15", subject: "Математика" },
+            { num: 5, time: "12:25-13:05", subject: "Русский язык" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Воспитание" },
+            { num: 7, time: "14:35-15:15", subject: "Индивидуальная работа" },
+            { num: 8, time: "15:30-16:10", subject: "English time" },
+            {
+              num: 9,
+              time: "16:20-17:00",
+              subject: "Выполнение домашнего задания",
+            },
+          ],
+          "5Б": [
+            { num: 1, time: "09:00-09:40", subject: "Робототехника" },
+            { num: 2, time: "9:50-10:30", subject: "Rus tili" },
+            { num: 3, time: "10:45-11:25", subject: "Jismoniy tarbiya" },
+            { num: 4, time: "11:35-12:15", subject: "Xitoy tili" },
+            { num: 5, time: "12:25-13:05", subject: "Ingliz tili" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Sinfdan tashqari o'qish" },
+            { num: 7, time: "14:35-15:15", subject: "Matematika" },
+            { num: 9, time: "16:20-17:00", subject: "Sceince" },
+          ],
+          "6A": [
+            { num: 1, time: "09:00-09:40", subject: "Математика" },
+            { num: 2, time: "9:50-10:30", subject: "Английский язык" },
+            { num: 3, time: "10:45-11:25", subject: "Информатика" },
+            { num: 4, time: "11:35-12:15", subject: "Робототехника" },
+            { num: 5, time: "12:25-13:05", subject: "Sceince" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Русский язык" },
+            { num: 7, time: "14:35-15:15", subject: "Физкультура" },
+            {
+              num: 9,
+              time: "16:20-17:00",
+              subject: "Выполнение домашнего задания",
+            },
+          ],
+          "6Б": [
+            { num: 1, time: "09:00-09:40", subject: "Sceince" },
+            { num: 2, time: "9:50-10:30", subject: "Informatika" },
+            { num: 3, time: "10:45-11:25", subject: "Tarix" },
+            { num: 4, time: "11:35-12:15", subject: "Робототехника" },
+            { num: 5, time: "12:25-13:05", subject: "Matematika" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Ingliz tili" },
+            { num: 7, time: "14:35-15:15", subject: "Jismoniy tarbiya" },
+            { num: 9, time: "16:20-17:00", subject: "Uy vazifasini bajarish" },
+          ],
+          "7A": [
+            { num: 1, time: "09:00-09:40", subject: "История Узбекистана" },
+            { num: 2, time: "9:50-10:30", subject: "Математика" },
+            { num: 3, time: "10:45-11:25", subject: "Биология" },
+            { num: 4, time: "11:35-12:15", subject: "Информатика" },
+            { num: 5, time: "12:25-13:05", subject: "Английский язык" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Физкультура" },
+            { num: 7, time: "14:35-15:15", subject: "Робототехника" },
+            { num: 8, time: "15:30-16:10", subject: "Воспитание" },
+            {
+              num: 9,
+              time: "16:20-17:00",
+              subject: "Выполнение домашнего задания",
+            },
+          ],
+          "8A": [
+            { num: 1, time: "09:00-09:40", subject: "Английский язык" },
+            { num: 2, time: "9:50-10:30", subject: "История Узбекистана" },
+            { num: 3, time: "10:45-11:25", subject: "Английский язык" },
+            { num: 4, time: "11:35-12:15", subject: "Английский язык" },
+            { num: 5, time: "12:25-13:05", subject: "Алгебра" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Час будущего" },
+            { num: 7, time: "14:35-15:15", subject: "Литература" },
+            { num: 8, time: "15:30-16:10", subject: "IT" },
+            {
+              num: 9,
+              time: "16:20-17:00",
+              subject: "Выполнение домашнего задания",
+            },
+          ],
+          "8Б": [
+            { num: 1, time: "09:00-09:40", subject: "Algebra" },
+            { num: 2, time: "9:50-10:30", subject: "Xitoy tili" },
+            { num: 3, time: "10:45-11:25", subject: "Rus tili" },
+            { num: 4, time: "11:35-12:15", subject: "Fizika" },
+            { num: 5, time: "12:25-13:05", subject: "Jismoniy tarbiya" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Biologiya" },
+            { num: 7, time: "14:35-15:15", subject: "Ingliz tili" },
+            { num: 8, time: "15:30-16:10", subject: "IT" },
+            {
+              num: 9,
+              time: "16:20-17:00",
+              subject: "Выполнение домашнего задания",
+            },
+          ],
+          "9A": [
+            { num: 1, time: "09:00-09:40", subject: "Английский язык" },
+            { num: 2, time: "9:50-10:30", subject: "Биология" },
+            { num: 3, time: "10:45-11:25", subject: "Китайский язык" },
+            { num: 4, time: "11:35-12:15", subject: "Русский язык" },
+            { num: 5, time: "12:25-13:05", subject: "Информатика" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Алгебра" },
+            { num: 7, time: "14:35-15:15", subject: "IT" },
+            { num: 8, time: "15:30-16:10", subject: "Индивидуальная работа" },
+            { num: 9, time: "16:20-17:00", subject: "IELTS" },
+          ],
+          "10А": [
+            { num: 1, time: "09:00-09:40", subject: "Литература" },
+            { num: 2, time: "9:50-10:30", subject: "Алгебра" },
+            { num: 3, time: "10:45-11:25", subject: "Физика" },
+            { num: 4, time: "11:35-12:15", subject: "Биология" },
+            { num: 5, time: "12:25-13:05", subject: "IELTS" },
+            { num: null, time: "13:05-13:45", subject: "__BREAK__" },
+            { num: 6, time: "13:45-14:25", subject: "Информатика" },
+            { num: 7, time: "14:35-15:15", subject: "Английский язык" },
+            { num: 8, time: "15:30-16:10", subject: "Индивидуальная работа" },
+            { num: 9, time: "16:20-17:00", subject: "IT" },
+          ],
+        },
+      };
+      const TEACHERS = {
+        "1A": {
+          name: "Хужаева Зумрад Фархадовна",
+          role: "учитель начальных классов",
+          phone: "94-178-87-70",
+        },
+        "1Б": {
+          name: "Анорбоева Зебинисо Муродулла кизи",
+          role: "учитель начальных классов",
+          phone: "93-314-67-70",
+        },
+        "1В": {
+          name: "",
+          role: "классный руководитель уточняется",
+          phone: "",
+        },
+        "2A": {
+          name: "Далмурзаева Гулчехра Серикбаевна",
+          role: "учитель начальных классов",
+          phone: "90-941-41-88",
+        },
+        "2Б": {
+          name: "Алижонова Мохизар Уктамжон кизи",
+          role: "учитель узбекских начальных классов",
+          phone: "99-975-94-54",
+        },
+        "3A": {
+          name: "Эргашева Саодатхон Дилмуроджоновна",
+          role: "учитель начальных классов",
+          phone: "94-327-25-22",
+        },
+        "4A": {
+          name: "Палванова Мадина Абдуллаевна",
+          role: "учитель начальных классов",
+          phone: "91-422-42-92",
+        },
+        "5A": {
+          name: "Имомназарова Дурдона Кобилжон кизи",
+          role: "физ-ра, таэквондо, кл. рук. 5А",
+          phone: "88-241-37-37",
+        },
+        "5Б": {
+          name: "Яхшибаева Наргиза Алламуродовна",
+          role: "учитель математики, кл. рук. 5Б",
+          phone: "50-783-21-73",
+        },
+        "6A": {
+          name: "Жамолхонова Султонахон Алихон кизи",
+          role: "учитель английского языка, кл. рук. 6А, завуч",
+          phone: "90-602-49-23",
+        },
+        "6Б": {
+          name: "Яхшибаева Наргиза Алламуродовна",
+          role: "учитель математики, кл. рук. 6Б",
+          phone: "50-783-21-73",
+        },
+        "7A": {
+          name: "Мусаева Феруза Абдурахимовна",
+          role: "учитель русского языка и литературы, кл. рук. 7А",
+          phone: "97-470-23-08",
+        },
+        "8A": {
+          name: "Садикова Шоира Бегмуратовна",
+          role: "учитель китайского языка, кл. рук. 8А",
+          phone: "91-163-95-14",
+        },
+        "8Б": { name: "", role: "классный руководитель уточняется", phone: "" },
+        "9A": {
+          name: "Джураева Сайёра Мухаммедовна",
+          role: "учитель узбекского языка, кл. рук. 9А",
+          phone: "97-441-74-54",
+        },
+        "10А": {
+          name: "Джураева Сайёра Мухаммедовна",
+          role: "учитель узбекского языка, кл. рук. 10А",
+          phone: "97-441-74-54",
+        },
+      };
+
+      (function () {
+        const CLASS_ORDER = [
+          "1A",
+          "1В",
+          "1Б",
+          "2A",
+          "2Б",
+          "3A",
+          "4A",
+          "5A",
+          "5Б",
+          "6A",
+          "6Б",
+          "7A",
+          "8A",
+          "8Б",
+          "9A",
+          "10А",
+        ];
+        const DAY_KEYS = ["mon", "tue", "wed", "thu", "fri"];
+        const DAY_LABEL = {
+          mon: "Понедельник",
+          tue: "Вторник",
+          wed: "Среда",
+          thu: "Четверг",
+          fri: "Пятница",
+        };
+        const DAY_COLOR = {
+          mon: "var(--mon)",
+          tue: "var(--tue)",
+          wed: "var(--wed)",
+          thu: "var(--thu)",
+          fri: "var(--fri)",
+        };
+        const JS_DAY_TO_KEY = {
+          1: "mon",
+          2: "tue",
+          3: "wed",
+          4: "thu",
+          5: "fri",
+        }; // 0=Sun,6=Sat -> not a school day
+
+        function renderLegend(todayKey) {
+          const legend = document.getElementById("legend");
+          legend.innerHTML = "";
+          DAY_KEYS.forEach(function (k) {
+            const dot = document.createElement("span");
+            dot.innerHTML =
+              '<span class="dot" style="background:' +
+              DAY_COLOR[k] +
+              '"></span>' +
+              DAY_LABEL[k] +
+              (k === todayKey ? " — сегодня" : "");
+            legend.appendChild(dot);
+          });
+        }
+
+        function renderClassPicker(activeCls, onPick) {
+          const picker = document.getElementById("classPicker");
+          picker.querySelectorAll(".class-btn").forEach((b) => b.remove());
+          CLASS_ORDER.forEach(function (cls) {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "class-btn" + (cls === activeCls ? " active" : "");
+            btn.textContent = cls;
+            btn.setAttribute("aria-label", cls + " класс");
+            btn.addEventListener("click", function () {
+              onPick(cls);
+            });
+            picker.appendChild(btn);
+          });
+        }
+
+        function renderTeacher(cls) {
+          const strip = document.getElementById("teacherStrip");
+          const info = TEACHERS[cls];
+          if (!info || !info.name) {
+            strip.style.display = "none";
+            return;
+          }
+          strip.style.display = "flex";
+          document.getElementById("teacherAvatar").textContent =
+            info.name.charAt(0);
+          document.getElementById("teacherName").textContent = info.name;
+          document.getElementById("teacherRole").textContent = info.role || "";
+          const phoneEl = document.getElementById("teacherPhone");
+          if (info.phone) {
+            phoneEl.style.display = "inline-block";
+            phoneEl.textContent = info.phone;
+            phoneEl.href = "tel:+998" + info.phone.replace(/-/g, "");
+          } else {
+            phoneEl.style.display = "none";
+          }
+        }
+
+        function renderSchedule(cls, todayKey) {
+          const grid = document.getElementById("scheduleGrid");
+          grid.innerHTML = "";
+
+          DAY_KEYS.forEach(function (dayKey) {
+            const isToday = dayKey === todayKey;
+            const col = document.createElement("div");
+            col.className = "col-12 col-sm-6 col-lg-4 col-xl-2dot4 col-xxl";
+            col.style.flex = "1 1 220px";
+
+            const lessons = (SCHEDULE[dayKey] && SCHEDULE[dayKey][cls]) || [];
+
+            let listHtml = "";
+            if (lessons.length === 0) {
+              listHtml = '<div class="empty-note">Уроков нет</div>';
+            } else {
+              listHtml =
+                '<ul class="lesson-list">' +
+                lessons
+                  .map(function (item) {
+                    const isBreak = item.subject === "__BREAK__";
+                    if (isBreak) {
+                      return (
+                        '<li class="lesson-item is-break">' +
+                        '<span class="lesson-num">•</span>' +
+                        '<span class="lesson-time">' +
+                        item.time +
+                        "</span>" +
+                        '<span class="lesson-name flex-grow-1">Перерыв</span>' +
+                        "</li>"
+                      );
+                    }
+                    return (
+                      '<li class="lesson-item">' +
+                      '<span class="lesson-num">' +
+                      (item.num !== null ? item.num : "•") +
+                      "</span>" +
+                      '<span class="lesson-time">' +
+                      item.time +
+                      "</span>" +
+                      '<span class="lesson-name flex-grow-1">' +
+                      item.subject +
+                      "</span>" +
+                      "</li>"
+                    );
+                  })
+                  .join("") +
+                "</ul>";
+            }
+
+            col.innerHTML =
+              '<div class="day-card' +
+              (isToday ? " is-today" : "") +
+              '">' +
+              '<div class="day-head" style="background:' +
+              DAY_COLOR[dayKey] +
+              '">' +
+              "<span>" +
+              DAY_LABEL[dayKey] +
+              "</span>" +
+              (isToday ? '<span class="today-pill">Сегодня</span>' : "") +
+              "</div>" +
+              listHtml +
+              "</div>";
+
+            grid.appendChild(col);
+          });
+        }
+
+        function init() {
+          const now = new Date();
+          const jsDay = now.getDay(); // 0=Sun..6=Sat
+          const todayKey = JS_DAY_TO_KEY[jsDay] || null;
+
+          document.getElementById("todayNameLabel").textContent = todayKey
+            ? DAY_LABEL[todayKey].toLowerCase()
+            : "выходной";
+
+          const months = [
+            "января",
+            "февраля",
+            "марта",
+            "апреля",
+            "мая",
+            "июня",
+            "июля",
+            "августа",
+            "сентября",
+            "октября",
+            "ноября",
+            "декабря",
+          ];
+          document.getElementById("fullDateLabel").textContent =
+            (todayKey
+              ? DAY_LABEL[todayKey]
+              : jsDay === 0
+                ? "Воскресенье"
+                : "Суббота") +
+            ", " +
+            now.getDate() +
+            " " +
+            months[now.getMonth()];
+
+          renderLegend(todayKey);
+
+          let activeClass = CLASS_ORDER[0];
+
+          function refresh(cls) {
+            activeClass = cls;
+            renderClassPicker(activeClass, refresh);
+            renderTeacher(activeClass);
+            renderSchedule(activeClass, todayKey);
+          }
+
+          refresh(activeClass);
+        }
+
+        document.addEventListener("DOMContentLoaded", init);
+      })();
+    </script>
+  </body>
 </html>
