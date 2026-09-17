@@ -96,6 +96,30 @@
         max-width: 600px;
       }
 
+      .mode-toggle {
+        display: inline-flex;
+        border: 2px solid var(--ink);
+        border-radius: 999px;
+        overflow: hidden;
+        margin-bottom: 18px;
+      }
+      .mode-btn {
+        font-family: "Baloo 2", sans-serif;
+        font-weight: 700;
+        font-size: 0.9rem;
+        padding: 9px 18px;
+        background: #fff;
+        color: var(--ink);
+        border: none;
+      }
+      .mode-btn + .mode-btn {
+        border-left: 2px solid var(--ink);
+      }
+      .mode-btn.active {
+        background: var(--ink);
+        color: #fff;
+      }
+
       .class-picker {
         display: flex;
         flex-wrap: wrap;
@@ -135,6 +159,52 @@
         font-size: 0.95rem;
         align-self: center;
         margin-right: 6px;
+      }
+
+      .subject-picker-wrap {
+        margin: 4px 0 8px;
+      }
+      .subject-search {
+        max-width: 360px;
+        border: 2px solid var(--ink);
+        border-radius: 12px;
+        padding: 9px 14px;
+        font-family: "Nunito", sans-serif;
+        font-weight: 700;
+        font-size: 0.92rem;
+        background: #fff;
+        margin-bottom: 10px;
+      }
+      .subject-search:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(244, 183, 64, 0.5);
+      }
+      .subject-picker {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        max-height: 130px;
+        overflow-y: auto;
+        padding: 2px 0 10px;
+      }
+      .subject-btn {
+        font-family: "Nunito", sans-serif;
+        font-weight: 700;
+        font-size: 0.84rem;
+        padding: 7px 13px;
+        border-radius: 999px;
+        border: 2px solid var(--ink);
+        background: #fff;
+        color: var(--ink);
+        white-space: nowrap;
+      }
+      .subject-btn.active {
+        background: var(--accent);
+        color: #fff;
+        border-color: var(--accent);
+      }
+      .subject-btn:hover {
+        transform: translateY(-1px);
       }
 
       .teacher-strip {
@@ -186,6 +256,42 @@
       .teacher-strip .t-phone:hover {
         background: var(--ink);
         color: #fff;
+      }
+
+      .subject-summary {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: #fff;
+        border: 2px solid var(--ink);
+        border-radius: 14px;
+        padding: 12px 16px;
+        margin: 18px 0 26px;
+        box-shadow: 4px 4px 0 var(--accent);
+        max-width: 640px;
+      }
+      .subject-summary .s-badge {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        background: var(--accent);
+        color: #fff;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Baloo 2", sans-serif;
+        font-weight: 800;
+        font-size: 1.1rem;
+      }
+      .subject-summary .s-name {
+        font-weight: 800;
+        font-size: 0.98rem;
+      }
+      .subject-summary .s-count {
+        color: var(--ink-soft);
+        font-size: 0.82rem;
+        font-weight: 700;
       }
 
       .legend {
@@ -285,6 +391,24 @@
         color: var(--ink-soft);
         font-weight: 700;
       }
+      .lesson-item.is-subject-hit {
+        background: rgba(255, 93, 115, 0.08);
+      }
+      .lesson-item.is-subject-hit .lesson-name {
+        color: var(--accent);
+        font-weight: 800;
+      }
+      .class-chip {
+        display: inline-block;
+        font-family: "Baloo 2", sans-serif;
+        font-weight: 800;
+        font-size: 0.75rem;
+        background: var(--ink);
+        color: #fff;
+        border-radius: 7px;
+        padding: 2px 7px;
+        margin-right: 6px;
+      }
 
       .day-card.is-today .lesson-item {
         border-bottom-color: rgba(43, 42, 76, 0.25);
@@ -331,13 +455,32 @@
         Расписание на
         <span class="today-underline" id="todayNameLabel">сегодня</span>
       </h1>
-      <p class="lead-text">
+      <p class="lead-text" id="leadText">
         Выберите класс — дневник покажет всю учебную неделю. День, в котором вы
         сейчас находитесь, выделен своим цветом и виден сразу.
       </p>
 
-      <div class="class-picker mt-4" id="classPicker">
+      <div class="mode-toggle" id="modeToggle">
+        <button type="button" class="mode-btn active" data-mode="class">
+          По классам
+        </button>
+        <button type="button" class="mode-btn" data-mode="subject">
+          По предмету (для учителя)
+        </button>
+      </div>
+
+      <div class="class-picker mt-2" id="classPicker">
         <span class="class-picker-label">Класс:</span>
+      </div>
+
+      <div class="subject-picker-wrap" id="subjectPickerWrap" style="display: none">
+        <input
+          type="text"
+          class="subject-search"
+          id="subjectSearch"
+          placeholder="Начните вводить предмет, например: Информатика…"
+        />
+        <div class="subject-picker" id="subjectPicker"></div>
       </div>
 
       <div class="teacher-strip" id="teacherStrip" style="display: none">
@@ -349,11 +492,19 @@
         <a href="#" class="t-phone" id="teacherPhone" style="display: none"></a>
       </div>
 
+      <div class="subject-summary" id="subjectSummary" style="display: none">
+        <div class="s-badge" id="subjectBadge">?</div>
+        <div>
+          <div class="s-name" id="subjectName">—</div>
+          <div class="s-count" id="subjectCount">—</div>
+        </div>
+      </div>
+
       <div class="legend" id="legend"></div>
 
       <div class="row g-3" id="scheduleGrid"></div>
 
-      <footer class="site-footer">
+      <footer class="site-footer" id="siteFooter">
         Нажмите на класс наверху, чтобы посмотреть его расписание.
       </footer>
     </div>
@@ -361,7 +512,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
       /* ===== Реальные данные: 2026_дарсжадвали.xlsx + информация_об_учителях.docx ===== */
-     const SCHEDULE = {
+const SCHEDULE = {
   mon: {
     "1A": [
       { num: 1, time: "09:00-09:40", subject: "Информатика" },
@@ -1416,6 +1567,46 @@
           5: "fri",
         }; // 0=Sun,6=Sat -> not a school day
 
+        // ---- Индекс "предмет -> где и когда" (строится один раз из SCHEDULE) ----
+        // subjectIndex[subject][dayKey] = [{ time, num, cls }, ...] отсортировано по времени
+        const subjectIndex = {};
+        DAY_KEYS.forEach(function (dayKey) {
+          const dayData = SCHEDULE[dayKey] || {};
+          CLASS_ORDER.forEach(function (cls) {
+            const lessons = dayData[cls] || [];
+            lessons.forEach(function (item) {
+              if (item.subject === "__BREAK__") return;
+              if (!subjectIndex[item.subject]) {
+                subjectIndex[item.subject] = {};
+                DAY_KEYS.forEach((d) => (subjectIndex[item.subject][d] = []));
+              }
+              subjectIndex[item.subject][dayKey].push({
+                time: item.time,
+                num: item.num,
+                cls: cls,
+              });
+            });
+          });
+        });
+        DAY_KEYS.forEach(function (dayKey) {
+          Object.keys(subjectIndex).forEach(function (subj) {
+            subjectIndex[subj][dayKey].sort(function (a, b) {
+              return a.time.localeCompare(b.time);
+            });
+          });
+        });
+        const SUBJECT_LIST = Object.keys(subjectIndex).sort(function (a, b) {
+          return a.localeCompare(b, "ru");
+        });
+
+        function subjectTotalCount(subj) {
+          let n = 0;
+          DAY_KEYS.forEach(function (d) {
+            n += subjectIndex[subj][d].length;
+          });
+          return n;
+        }
+
         function renderLegend(todayKey) {
           const legend = document.getElementById("legend");
           legend.innerHTML = "";
@@ -1447,6 +1638,34 @@
           });
         }
 
+        function renderSubjectPicker(activeSubject, onPick, filterText) {
+          const picker = document.getElementById("subjectPicker");
+          picker.innerHTML = "";
+          const q = (filterText || "").trim().toLowerCase();
+          const list = q
+            ? SUBJECT_LIST.filter((s) => s.toLowerCase().includes(q))
+            : SUBJECT_LIST;
+          if (list.length === 0) {
+            const none = document.createElement("div");
+            none.className = "empty-note";
+            none.style.padding = "6px 2px";
+            none.textContent = "Ничего не найдено";
+            picker.appendChild(none);
+            return;
+          }
+          list.forEach(function (subj) {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className =
+              "subject-btn" + (subj === activeSubject ? " active" : "");
+            btn.textContent = subj;
+            btn.addEventListener("click", function () {
+              onPick(subj);
+            });
+            picker.appendChild(btn);
+          });
+        }
+
         function renderTeacher(cls) {
           const strip = document.getElementById("teacherStrip");
           const info = TEACHERS[cls];
@@ -1467,6 +1686,26 @@
           } else {
             phoneEl.style.display = "none";
           }
+        }
+
+        function renderSubjectSummary(subj) {
+          const wrap = document.getElementById("subjectSummary");
+          if (!subj) {
+            wrap.style.display = "none";
+            return;
+          }
+          wrap.style.display = "flex";
+          document.getElementById("subjectBadge").textContent = subj.charAt(0);
+          document.getElementById("subjectName").textContent = subj;
+          const total = subjectTotalCount(subj);
+          document.getElementById("subjectCount").textContent =
+            total + (total % 10 === 1 && total % 100 !== 11
+              ? " урок за неделю"
+              : total % 10 >= 2 &&
+                  total % 10 <= 4 &&
+                  !(total % 100 >= 12 && total % 100 <= 14)
+                ? " урока за неделю"
+                : " уроков за неделю");
         }
 
         function renderSchedule(cls, todayKey) {
@@ -1538,6 +1777,63 @@
           });
         }
 
+        function renderScheduleBySubject(subj, todayKey) {
+          const grid = document.getElementById("scheduleGrid");
+          grid.innerHTML = "";
+
+          DAY_KEYS.forEach(function (dayKey) {
+            const isToday = dayKey === todayKey;
+            const col = document.createElement("div");
+            col.className = "col-12 col-sm-6 col-lg-4 col-xl-2dot4 col-xxl";
+            col.style.flex = "1 1 220px";
+
+            const hits = (subj && subjectIndex[subj] && subjectIndex[subj][dayKey]) || [];
+
+            let listHtml = "";
+            if (hits.length === 0) {
+              listHtml = '<div class="empty-note">Нет уроков в этот день</div>';
+            } else {
+              listHtml =
+                '<ul class="lesson-list">' +
+                hits
+                  .map(function (item) {
+                    return (
+                      '<li class="lesson-item is-subject-hit">' +
+                      '<span class="lesson-num">' +
+                      (item.num !== null ? item.num : "•") +
+                      "</span>" +
+                      '<span class="lesson-time">' +
+                      item.time +
+                      "</span>" +
+                      '<span class="lesson-name flex-grow-1">' +
+                      '<span class="class-chip">' + item.cls + "</span>" +
+                      "</span>" +
+                      "</li>"
+                    );
+                  })
+                  .join("") +
+                "</ul>";
+            }
+
+            col.innerHTML =
+              '<div class="day-card' +
+              (isToday ? " is-today" : "") +
+              '">' +
+              '<div class="day-head" style="background:' +
+              DAY_COLOR[dayKey] +
+              '">' +
+              "<span>" +
+              DAY_LABEL[dayKey] +
+              "</span>" +
+              (isToday ? '<span class="today-pill">Сегодня</span>' : "") +
+              "</div>" +
+              listHtml +
+              "</div>";
+
+            grid.appendChild(col);
+          });
+        }
+
         function init() {
           const now = new Date();
           const jsDay = now.getDay(); // 0=Sun..6=Sat
@@ -1574,16 +1870,87 @@
 
           renderLegend(todayKey);
 
+          let mode = "class"; // "class" | "subject"
           let activeClass = CLASS_ORDER[0];
+          let activeSubject = SUBJECT_LIST[0] || null;
+          let subjectFilter = "";
 
-          function refresh(cls) {
-            activeClass = cls;
-            renderClassPicker(activeClass, refresh);
+          const classPickerEl = document.getElementById("classPicker");
+          const subjectWrapEl = document.getElementById("subjectPickerWrap");
+          const subjectSearchEl = document.getElementById("subjectSearch");
+          const teacherStripEl = document.getElementById("teacherStrip");
+          const subjectSummaryEl = document.getElementById("subjectSummary");
+          const leadTextEl = document.getElementById("leadText");
+          const siteFooterEl = document.getElementById("siteFooter");
+
+          function refreshClassView() {
+            renderClassPicker(activeClass, function (cls) {
+              activeClass = cls;
+              refreshClassView();
+            });
             renderTeacher(activeClass);
             renderSchedule(activeClass, todayKey);
           }
 
-          refresh(activeClass);
+          function refreshSubjectView() {
+            renderSubjectPicker(
+              activeSubject,
+              function (subj) {
+                activeSubject = subj;
+                refreshSubjectView();
+              },
+              subjectFilter,
+            );
+            renderSubjectSummary(activeSubject);
+            renderScheduleBySubject(activeSubject, todayKey);
+          }
+
+          function applyMode() {
+            const isClassMode = mode === "class";
+            classPickerEl.style.display = isClassMode ? "flex" : "none";
+            subjectWrapEl.style.display = isClassMode ? "none" : "block";
+            teacherStripEl.style.display =
+              isClassMode && TEACHERS[activeClass] && TEACHERS[activeClass].name
+                ? "flex"
+                : "none";
+            subjectSummaryEl.style.display = isClassMode ? "none" : "flex";
+            leadTextEl.textContent = isClassMode
+              ? "Выберите класс — дневник покажет всю учебную неделю. День, в котором вы сейчас находитесь, выделен своим цветом и виден сразу."
+              : "Выберите предмет — увидите все классы, дни и часы, когда этот предмет идёт по расписанию. Удобно для учителей, которые ведут один предмет в разных классах.";
+            siteFooterEl.textContent = isClassMode
+              ? "Нажмите на класс наверху, чтобы посмотреть его расписание."
+              : "Начните вводить название предмета или выберите его из списка.";
+            document
+              .querySelectorAll(".mode-btn")
+              .forEach((b) => b.classList.toggle("active", b.dataset.mode === mode));
+
+            if (isClassMode) {
+              refreshClassView();
+            } else {
+              refreshSubjectView();
+            }
+          }
+
+          document.querySelectorAll(".mode-btn").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              mode = btn.dataset.mode;
+              applyMode();
+            });
+          });
+
+          subjectSearchEl.addEventListener("input", function (e) {
+            subjectFilter = e.target.value;
+            renderSubjectPicker(
+              activeSubject,
+              function (subj) {
+                activeSubject = subj;
+                refreshSubjectView();
+              },
+              subjectFilter,
+            );
+          });
+
+          applyMode();
         }
 
         document.addEventListener("DOMContentLoaded", init);
