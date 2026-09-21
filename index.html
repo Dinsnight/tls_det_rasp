@@ -1449,7 +1449,45 @@ const SCHEDULE = {
     ],
   },
 };
+
+/* ===== Нулевка (подготовительный класс, 6 лет): расписаниеНУЛЕВКА_.xlsx ===== */
+(function () {
+  const days = ["mon", "tue", "wed", "thu", "fri"];
+  // [время, номер урока, пн, вт, ср, чт, пт]; если 3 элемента — режимный момент на все дни
+  const rows = [
+    ["8:30-09:00", null, "Завтрак"],
+    ["09:00-09:40", 1, "Английский язык", "Подготовка к письму", "Чтение", "Математика", "Подготовка к письму"],
+    ["9:50-10:30", 2, "Логопед", "Развитие речи", "Математика", "Английский язык", "Английский язык"],
+    ["10:30-10:45", null, "Второй завтрак"],
+    ["10:45-11:25", 3, "Технология", "Математика", "Подготовка к письму", "Подготовка к письму", "Математика"],
+    ["11:35-12:15", 4, "Чтение", "Английский язык", "Английский язык", "Шахматный кружок", "Физкультура"],
+    ["12:25-13:05", null, "Обед"],
+    ["13:05-13:45", null, "Время отдыха"],
+    ["13:45-14:25", 5, "Математика", "Шахматный кружок", "Аппликация", "Физкультура", "Робототехника"],
+    ["14:35-15:15", 6, "Каратэ/ гимнастика", "Прогулька / подвижные игры", "Каратэ/ гимнастика", "Логика", "Окружающий мир"],
+    ["15:15-15:30", null, "Полдник"],
+    ["15:30-16:10", 7, "Подготовка к письму", "Чтение", "Внеклассное чтение", "Английский язык (Speaking)", "Логопед"],
+    ["16:20-17:00", 8, "Логика", "Рисование", "Подвижные игры", "Развитие речи", "Подвижные игры"],
+    ["17:00-17:30", null, "Ужин"],
+  ];
+  days.forEach(function (d, i) {
+    SCHEDULE[d]["0"] = rows.map(function (r) {
+      const isMeal = r.length === 3;
+      return {
+        num: r[1],
+        time: r[0],
+        subject: isMeal ? "__MEAL__:" + r[2] : r[2 + i],
+      };
+    });
+  });
+})();
+
       const TEACHERS = {
+        "0": {
+          name: "",
+          role: "классный руководитель уточняется",
+          phone: "",
+        },
         "1A": {
           name: "Хужаева Зумрад Фархадовна",
           role: "учитель начальных классов",
@@ -1530,6 +1568,7 @@ const SCHEDULE = {
 
       (function () {
         const CLASS_ORDER = [
+          "0",
           "1A",
           "1В",
           "1Б",
@@ -1578,7 +1617,8 @@ const SCHEDULE = {
           CLASS_ORDER.forEach(function (cls) {
             const lessons = dayData[cls] || [];
             lessons.forEach(function (item) {
-              if (item.subject === "__BREAK__") return;
+              // пропускаем перерывы и режимные моменты (__BREAK__, __MEAL__:...)
+              if (item.subject.indexOf("__") === 0) return;
               if (!subjectIndex[item.subject]) {
                 subjectIndex[item.subject] = {};
                 DAY_KEYS.forEach((d) => (subjectIndex[item.subject][d] = []));
@@ -1633,7 +1673,10 @@ const SCHEDULE = {
             btn.type = "button";
             btn.className = "class-btn" + (cls === activeCls ? " active" : "");
             btn.textContent = cls;
-            btn.setAttribute("aria-label", cls + " класс");
+            btn.setAttribute(
+              "aria-label",
+              cls === "0" ? "Нулевой класс" : cls + " класс",
+            );
             btn.addEventListener("click", function () {
               onPick(cls);
             });
@@ -1731,7 +1774,11 @@ const SCHEDULE = {
                 '<ul class="lesson-list">' +
                 lessons
                   .map(function (item) {
-                    const isBreak = item.subject === "__BREAK__";
+                    const isMeal = item.subject.indexOf("__MEAL__:") === 0;
+                    const isBreak = item.subject === "__BREAK__" || isMeal;
+                    const breakLabel = isMeal
+                      ? item.subject.slice(9)
+                      : "Перерыв";
                     if (isBreak) {
                       return (
                         '<li class="lesson-item is-break">' +
@@ -1739,7 +1786,9 @@ const SCHEDULE = {
                         '<span class="lesson-time">' +
                         item.time +
                         "</span>" +
-                        '<span class="lesson-name flex-grow-1">Перерыв</span>' +
+                        '<span class="lesson-name flex-grow-1">' +
+                        breakLabel +
+                        "</span>" +
                         "</li>"
                       );
                     }
@@ -1874,7 +1923,7 @@ const SCHEDULE = {
           renderLegend(todayKey);
 
           let mode = "class"; // "class" | "subject"
-          let activeClass = CLASS_ORDER[0];
+          let activeClass = "1A";
           let activeSubject = SUBJECT_LIST[0] || null;
           let subjectFilter = "";
 
